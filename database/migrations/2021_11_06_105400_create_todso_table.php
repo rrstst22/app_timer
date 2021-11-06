@@ -16,7 +16,7 @@ class CreateTodsoTable extends Migration
         Schema::create('todos', function (Blueprint $table) {
             $table->increments('id');
             $table->datetime('date');
-            $table->string('holiday');
+            $table->string('name');
             $table->string('detail');
             $table->timestamps();
         });

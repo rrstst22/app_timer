@@ -2086,27 +2086,38 @@ __webpack_require__.r(__webpack_exports__);
     selected_time: {
       type: String,
       "default": ""
+    },
+    selected_todo: {
+      type: Number,
+      "default": 0
     }
   },
   data: function data() {
     return {
-      holidays: [],
-      countdown_timer: 0
+      selected_time_1: "",
+      selected_name: "　",
+      holiday: [],
+      countdown_timer: 0,
+      todo: []
     };
   },
   watch: {
     selected_time: function selected_time() {
       clearTimeout(this.countdown_timer);
+      this.getHoliday();
+      this.countdown();
+    },
+    selected_todo: function selected_todo() {
+      clearTimeout(this.countdown_timer);
+      this.getTodo();
       this.countdown();
     }
-  },
-  mounted: function mounted() {//window.setTimeout(this.countdown,1000);
   },
   methods: {
     countdown: function countdown() {
       var now = new Date(); //今の時間    
 
-      var time = Date.parse(this.selected_time);
+      var time = Date.parse(this.selected_time_1);
       var date = new Date(time);
       var differ = date.getTime() - now.getTime(); //あと何秒か計算
 
@@ -2123,6 +2134,35 @@ __webpack_require__.r(__webpack_exports__);
       document.getElementById("min").textContent = String(min).padStart(2, "0");
       document.getElementById("sec").textContent = String(sec).padStart(2, "0");
       this.countdown_timer = window.setTimeout(this.countdown, 1000); //1秒毎に繰り返す
+    },
+    getHoliday: function getHoliday() {
+      var self = this;
+      axios.get('get-holiday', {
+        params: {
+          date: this.selected_time
+        }
+      }).then(function (response) {
+        self.holiday = response.data;
+        self.selected_time_1 = self.selected_time;
+        self.selected_name = self.holiday.name;
+      })["catch"](function (error) {
+        alert(error);
+      });
+    },
+    getTodo: function getTodo() {
+      var self = this;
+      axios.get('get-todo', {
+        params: {
+          id: this.selected_todo
+        }
+      }).then(function (response) {
+        self.todo = response.data;
+        console.log(response.data[0].name);
+        self.selected_time_1 = response.data[0].date;
+        self.selected_name = response.data[0].name;
+      })["catch"](function (error) {
+        alert(error);
+      });
     }
   }
 });
@@ -2202,7 +2242,6 @@ __webpack_require__.r(__webpack_exports__);
       var self = this;
       axios.get('get-holidays').then(function (response) {
         self.holidays = response.data;
-        console.log(self.holidays);
       })["catch"](function (error) {
         alert(error);
       });
@@ -2243,7 +2282,7 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       todos: [],
-      selected_time: "2021-11-07",
+      selected_time: 0,
       date: "",
       name: ""
     };
@@ -2253,16 +2292,18 @@ __webpack_require__.r(__webpack_exports__);
     this.getTodos();
   },
   methods: {
-    update: function update(index) {
-      this.selected_time = index;
+    update: function update(selected_time) {
+      this.$emit('todo-click', selected_time);
     },
     deleteTodo: function deleteTodo(todo_id) {
-      alert(todo_id);
+      var self = this;
       axios["delete"]('vue/delete-todo', {
         data: {
           id: todo_id
         }
-      }).then(function (response) {})["catch"](function (error) {
+      }).then(function (response) {
+        self.getTodos();
+      })["catch"](function (error) {
         alert(error);
       });
     },
@@ -2280,10 +2321,20 @@ __webpack_require__.r(__webpack_exports__);
         date: this.date,
         name: this.name
       }).then(function (response) {
-        self.date = "", self.name = ""; // self.todos = response.data;
+        self.date = "", self.name = "";
+        self.getTodos(); // self.todos = response.data;
       })["catch"](function (error) {
         alert(error);
       });
+    },
+    formatDate: function formatDate(todo_date) {
+      var time = Date.parse(todo_date);
+      var date = new Date(time);
+      var year = date.getFullYear();
+      var month = ("0" + (date.getMonth() + 1)).slice(-2);
+      var day = ("0" + date.getDate()).slice(-2);
+      var formatted_date = year + "-" + month + "-" + day;
+      return formatted_date;
     }
   }
 });
@@ -2329,12 +2380,16 @@ var app = new Vue({
   data: function data() {
     return {
       on_arrow: true,
-      selected_time: ""
+      selected_time: "",
+      selected_todo: 0
     };
   },
   methods: {
     updateTime: function updateTime(selected_time) {
       this.selected_time = selected_time;
+    },
+    updateTodo: function updateTodo(selected_todo) {
+      this.selected_todo = selected_todo;
     }
   }
 });
@@ -6816,7 +6871,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.time-box[data-v-2bd14908] {\n    font-size: 1.5rem;\n}\n.todo-box[data-v-2bd14908] {\n    overflow-y: scroll;\n    height: 500px;\n    cursor: pointer;\n}\n.holiday[data-v-2bd14908] {\n    width: 100%;\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.time-box[data-v-2bd14908] {\n    font-size: 1.5rem;\n}\n.todo-box[data-v-2bd14908] {\n    overflow-y: scroll;\n    height: 500px;\n    /* cursor: pointer; */\n}\n.holiday[data-v-2bd14908] {\n    width: 80%;\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -38576,7 +38631,7 @@ var render = function () {
     _c("div", { staticClass: "col-md-8" }, [
       _c("div", { staticClass: "time-box text-center p-4" }, [
         _c("p", { staticClass: "until" }, [
-          _vm._v(_vm._s(_vm.holidays[_vm.selected_time]) + "まで"),
+          _vm._v(_vm._s(_vm.selected_name) + "まで"),
         ]),
         _vm._v(" "),
         _vm._m(0),
@@ -38726,13 +38781,18 @@ var render = function () {
           _c(
             "button",
             {
+              staticClass: "btn holiday p-4",
               on: {
                 click: function ($event) {
-                  return _vm.update(index)
+                  return _vm.update(todo.id)
                 },
               },
             },
-            [_vm._v(_vm._s(todo.date) + " " + _vm._s(todo.name))]
+            [
+              _vm._v(
+                _vm._s(_vm.formatDate(todo.date)) + " " + _vm._s(todo.name)
+              ),
+            ]
           ),
           _vm._v(" "),
           _c(

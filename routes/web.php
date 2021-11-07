@@ -19,6 +19,8 @@ Route::get('/', function () {
 
 
 Route::get('get-holidays', [App\Http\Controllers\CountDownController::class, 'getHolidays']);
+Route::get('get-holiday', [App\Http\Controllers\CountDownController::class, 'getHoliday']);
 Route::get('get-todos', [App\Http\Controllers\ToDoController::class, 'getTodos']);
+Route::get('get-todo', [App\Http\Controllers\ToDoController::class, 'getTodo']);
 Route::post('vue/register-todo', [App\Http\Controllers\ToDoController::class, 'registerTodo']);
 Route::delete('vue/delete-todo', [App\Http\Controllers\ToDoController::class, 'deleteTodo']);

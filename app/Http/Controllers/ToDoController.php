@@ -14,6 +14,12 @@ class ToDoController extends Controller
         return $todos;
     }
 
+    public function getTodo(Request $request)
+    {
+        $todo = Todo::where('id', $request->id)->get();
+        return $todo;
+    }
+
     public function registerTodo(Request $request)
     {
         $date = $request->date;

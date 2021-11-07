@@ -27,7 +27,6 @@
                 axios.get('get-holidays')
                     .then(function(response){
                         self.holidays = response.data;
-                        console.log(self.holidays);
                     }).catch(function(error){
                         alert(error);
                 });

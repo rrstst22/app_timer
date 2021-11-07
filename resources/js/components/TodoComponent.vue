@@ -2,7 +2,7 @@
     <div>
         <div class="todo-box">
             <div class="border" v-for="(todo, index) in todos" v-bind:key="index">
-                <button class="" v-on:click="update(index)">{{ todo.date }} {{ todo.name }}</button>
+                <button class="btn holiday p-4" v-on:click="update(todo.id)">{{ formatDate(todo.date) }} {{ todo.name }}</button>
                 <button v-on:click="deleteTodo(todo.id)">削除</button>
             </div>
         </div>
@@ -19,7 +19,7 @@
         data () {
             return {
                 todos: [],
-                selected_time: "2021-11-07",
+                selected_time: 0,
                 date: "",
                 name: ""
             }
@@ -28,15 +28,16 @@
             this.getTodos();
         },
         methods: {
-            update: function(index) {
-                this.selected_time = index;
+            update: function(selected_time) {
+                this.$emit('todo-click', selected_time);
             },
             deleteTodo: function(todo_id) {
-                alert(todo_id);
+                var self = this;
                 axios.delete('vue/delete-todo', {
                     data: {id: todo_id}
                 })
                     .then(function(response){
+                        self.getTodos();
                     }).catch(function(error){
                         alert(error);
                 });          
@@ -59,11 +60,22 @@
                     .then(function(response){
                         self.date = "",
                         self.name = ""
+                        self.getTodos();
                         // self.todos = response.data;
                     }).catch(function(error){
                         alert(error);
                 });               
-            }
+            },
+            formatDate: function(todo_date){
+                const time = Date.parse(todo_date);
+                const date = new Date(time);
+                const year = date.getFullYear();
+                const month = ("0"+(date.getMonth() + 1)).slice(-2);
+                const day = ("0"+date.getDate()).slice(-2);
+                const formatted_date = year + "-" + month + "-" + day; 
+
+                return formatted_date;
+            },
         }
     }
 
@@ -77,9 +89,9 @@
 .todo-box {
     overflow-y: scroll;
     height: 500px;
-    cursor: pointer;
+    /* cursor: pointer; */
 }
 .holiday {
-    width: 100%;
+    width: 80%;
 }
 </style>

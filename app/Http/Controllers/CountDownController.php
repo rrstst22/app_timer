@@ -19,4 +19,18 @@ class CountDownController extends Controller
 
         return $posts;
     }
+
+    public function getHoliday(Request $request)
+    {
+        $date = $request->date;
+        $url = "http://api.national-holidays.jp/".$date;
+        $method = "GET";
+
+        $client = new Client();
+        $response = $client->request($method, $url);
+        $posts = $response->getBody();
+
+        return $posts;
+    }
+    
 }

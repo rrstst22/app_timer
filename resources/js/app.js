@@ -35,12 +35,16 @@ const app = new Vue({
     data() {
         return {
             on_arrow: true,
-            selected_time: ""
+            selected_time: "",
+            selected_todo: 0,
         }  
     },
     methods: {
         updateTime: function (selected_time) {
             this.selected_time = selected_time;
+        },
+        updateTodo: function (selected_todo) {
+            this.selected_todo = selected_todo;
         },
     }
 });

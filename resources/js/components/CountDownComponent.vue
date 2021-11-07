@@ -11,31 +11,33 @@
                 </p>
             </div>
         </div>
-        <div class="col-md-4 holiday-box">
-            <div class="border" v-for="(holiday, index) in holidays" v-bind:key="index">
-                <button class="btn holiday p-4" v-on:click="update(index)">{{ index }} {{ holiday }}</button>
-            </div>
-        </div>
     </div>
 </template>
 
 <script>
     export default {
+        props: {
+            selected_time: {
+                type: String,
+                default: ""
+            }
+        },
         data () {
             return {
                 holidays: [],
-                selected_time: "2021-11-07",
+                countdown_timer: 0,
             }
         },
-        mounted() { //createdにすると動かない
-            this.getHoliday();
-            window.setTimeout(this.countdown,1000);
-            // this.countdown();
+        watch: {
+            selected_time: function() {
+                clearTimeout(this.countdown_timer);
+                this.countdown();
+            },
+        },
+        mounted() { 
+            //window.setTimeout(this.countdown,1000);
         },
         methods: {
-            update: function(index) {
-                this.selected_time = index;
-            },
             countdown: function() {
                 const now=new Date();//今の時間    
                 const time = Date.parse(this.selected_time);
@@ -51,23 +53,7 @@
                 document.getElementById("hour").textContent=String(hour).padStart(2,"0"); //一桁になった時0がつくように
                 document.getElementById("min").textContent=String(min).padStart(2,"0");
                 document.getElementById("sec").textContent=String(sec).padStart(2,"0");
-                window.setTimeout(this.countdown,1000);//1秒毎に繰り返す
-            },
-            getHoliday: function() {
-                var self = this;
-                axios.get('get-holidays')
-                    .then(function(response){
-                        self.holidays = response.data;
-                        console.log(self.holidays);
-                    }).catch(function(error){
-                        alert(error);
-                });
-            },
-            formatDate: function(date){
-                date = date*1000;
-                date = date.getTime();
-                console.log(date);
-                return date;
+                this.countdown_timer = window.setTimeout(this.countdown,1000);//1秒毎に繰り返す
             },
         }
     }

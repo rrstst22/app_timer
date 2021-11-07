@@ -21,6 +21,7 @@ window.Vue = require('vue').default;
 
 Vue.component('example-component', require('./components/ExampleComponent.vue').default);
 Vue.component('countdown-component', require('./components/CountDownComponent.vue').default);
+Vue.component('holiday-component', require('./components/HolidayComponent.vue').default);
 Vue.component('todo-component', require('./components/TodoComponent.vue').default);
 
 /**
@@ -37,5 +38,9 @@ const app = new Vue({
             selected_time: ""
         }  
     },
-    
+    methods: {
+        updateTime: function (selected_time) {
+            this.selected_time = selected_time;
+        },
+    }
 });

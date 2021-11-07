@@ -7,9 +7,6 @@
             </div>
         </div>
         <form v-on:submit.prevent>
-            <!-- <input type="text" name="year">
-            <input type="text" name="month">
-            <input type="text" name="day"> -->
             <input type="date" name="date" v-model="date">
             <input type="text" name="name" v-model="name">
             <button type="submit" v-on:click="registerTodo">登録</button>

@@ -2263,6 +2263,7 @@ __webpack_require__.r(__webpack_exports__);
     update: function update(selected_time) {
       this.selected_time = selected_time;
       this.$emit('holiday-click', selected_time);
+      this.$emit('todo-click-c');
     },
     getNow: function getNow(index) {
       var time = Date.parse(index);
@@ -2344,6 +2345,7 @@ __webpack_require__.r(__webpack_exports__);
   methods: {
     update: function update(selected_time) {
       this.$emit('todo-click', selected_time);
+      this.$emit('todo-click-c');
     },
     deleteTodo: function deleteTodo(todo_id) {
       var self = this;
@@ -2445,8 +2447,16 @@ var app = new Vue({
     return {
       on_arrow: true,
       selected_time: "",
-      selected_todo: 0
+      selected_todo: 0,
+      on_modal_mode: false,
+      show_room_content: true,
+      show_todo: true
     };
+  },
+  mounted: function mounted() {
+    window.addEventListener('resize', this.handleResize); //リサイズ検知
+
+    this.handleResize();
   },
   methods: {
     updateTime: function updateTime(selected_time) {
@@ -2454,6 +2464,36 @@ var app = new Vue({
     },
     updateTodo: function updateTodo(selected_todo) {
       this.selected_todo = selected_todo;
+    },
+    handleResize: function handleResize() {
+      if (window.innerWidth <= 800) {
+        //画面幅800px以下でモーダルモード
+        this.on_modal_mode = true;
+        this.show_room_content = false;
+        this.show_todo = false;
+      } else {
+        this.on_modal_mode = false;
+        this.show_room_content = true;
+        this.show_todo = true;
+      }
+    },
+    openModalTodo: function openModalTodo() {
+      this.show_todo = true;
+    },
+    openModalHoliday: function openModalHoliday() {
+      this.show_room_content = true;
+    },
+    closeModalTodo: function closeModalTodo() {
+      if (this.on_modal_mode) {
+        //モーダル画面表示ではない場合は、画面を閉じない。
+        this.show_todo = false;
+      }
+    },
+    closeModal: function closeModal() {
+      if (this.on_modal_mode) {
+        //モーダル画面表示ではない場合は、画面を閉じない。
+        this.show_room_content = false;
+      }
     }
   }
 });

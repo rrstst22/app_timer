@@ -45,6 +45,7 @@
         methods: {
             update: function(selected_time) {
                 this.$emit('todo-click', selected_time);
+                this.$emit('todo-click-c');
             },
             deleteTodo: function(todo_id) {
                 var self = this;

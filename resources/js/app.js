@@ -37,7 +37,14 @@ const app = new Vue({
             on_arrow: true,
             selected_time: "",
             selected_todo: 0,
+            on_modal_mode: false,
+            show_room_content: true,
+            show_todo: true,
         }  
+    },
+    mounted() {
+        window.addEventListener('resize', this.handleResize); //リサイズ検知
+        this.handleResize();
     },
     methods: {
         updateTime: function (selected_time) {
@@ -45,6 +52,33 @@ const app = new Vue({
         },
         updateTodo: function (selected_todo) {
             this.selected_todo = selected_todo;
+        },
+        handleResize: function() {
+            if (window.innerWidth <= 800) { //画面幅800px以下でモーダルモード
+                this.on_modal_mode = true;
+                this.show_room_content = false;
+                this.show_todo = false;
+            } else {
+                this.on_modal_mode = false;
+                this.show_room_content = true;
+                this.show_todo = true;
+            }
+        },
+        openModalTodo: function(){
+            this.show_todo = true;
+        },
+        openModalHoliday: function(){
+            this.show_room_content = true;
+        },
+        closeModalTodo: function(){
+            if(this.on_modal_mode){   //モーダル画面表示ではない場合は、画面を閉じない。
+              this.show_todo = false;
+            }
+        },
+        closeModal: function(){
+            if(this.on_modal_mode){   //モーダル画面表示ではない場合は、画面を閉じない。
+              this.show_room_content = false;
+            }
         },
     }
 });

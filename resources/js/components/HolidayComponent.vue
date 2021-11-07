@@ -35,6 +35,7 @@
             update: function(selected_time) {
                 this.selected_time = selected_time;
                 this.$emit('holiday-click', selected_time);
+                this.$emit('todo-click-c');
             },
             getNow: function(index) {
                 const time = Date.parse(index);

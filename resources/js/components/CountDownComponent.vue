@@ -2,14 +2,13 @@
     <div class="p-4">
         <div class="text-center"><h3>カウントダウン</h3></div>
         <div class="time-section text-center p-4">
-            <div class="p-4">
-                <p class="until">{{ selected_name }}まで</p>
+            <div class="p-2">
+                <p>{{ selected_name }}まで</p>
+                <p>あと</p>
             </div>
             <div class="time-box p-4">
-                <p class="timer">あと<span id="day"></span>日と</p>
-                <p><span id="hour"></span>時間
-                <span id="min"></span>分
-                <span id="sec"></span>秒</p>
+                <p><span id="day"></span>日と</p>
+                <p><span id="hour"></span>時間<span id="min"></span>分<span id="sec"></span>秒</p>
             </div>
         </div>
     </div>

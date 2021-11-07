@@ -3,10 +3,18 @@
     <div class="text-center"><h3>祝日</h3></div>
     <div class="holiday-box">
         <div class="border" v-for="(holiday, index) in holidays" v-bind:key="index">
-            <button class="btn holiday p-3" v-on:click="update(index)">
-                {{ index }}<br>
-                {{ holiday }}
-            </button>
+            <div v-if="getNow(index)">
+                <button class="btn holiday p-3" v-on:click="update(index)">
+                    {{ index }}<br>
+                    {{ holiday }}
+                </button>
+            </div>
+            <div v-else>
+                <button class="btn holiday-passed p-3" v-on:click="update(index)">
+                    {{ index }}<br>
+                    {{ holiday }}
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -27,6 +35,15 @@
             update: function(selected_time) {
                 this.selected_time = selected_time;
                 this.$emit('holiday-click', selected_time);
+            },
+            getNow: function(index) {
+                const time = Date.parse(index);
+                const now = new Date();
+                if(now<=time){
+                    return true;
+                }else {
+                    return false;
+                }
             },
             getHoliday: function() {
                 var self = this;
@@ -54,5 +71,9 @@
 }
 .holiday {
     width: 100%;
+}
+.holiday-passed {
+    width: 100%;
+    opacity: .4;
 }
 </style>

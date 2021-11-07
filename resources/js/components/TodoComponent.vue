@@ -2,20 +2,29 @@
     <div class="p-4">
         <div class="text-center"><h3>ToDoリスト</h3></div>
         <div class="todo-section">
-            <div class="border todo-box" v-for="(todo, index) in todos" v-bind:key="index">
-                <button class="btn todo-btn py-3" v-on:click="update(todo.id)">
-                    {{ formatDate(todo.date) }}<br>
-                    {{ todo.name }}
-                </button>
-                <button class="btn delete-btn btn-outline-primary" v-on:click="deleteTodo(todo.id)">削除</button>
+            <div class="border" v-for="(todo, index) in todos" v-bind:key="index">
+                <div v-if="compareDate(todo.date)" class="todo-box">
+                    <button class="btn todo-btn py-3" v-on:click="update(todo.id)">
+                        {{ formatDate(todo.date) }}<br>
+                        {{ todo.name }}
+                    </button>
+                    <button class="btn delete-btn btn-outline-primary" v-on:click="deleteTodo(todo.id)">削除</button>
+                </div>
+                <div v-else class="todo-box">
+                    <button class="btn todo-btn-passed py-3" v-on:click="update(todo.id)">
+                        {{ formatDate(todo.date) }}<br>
+                        {{ todo.name }}
+                    </button>
+                    <button class="btn delete-btn-passed btn-outline-primary" v-on:click="deleteTodo(todo.id)">削除</button>
+                </div>
             </div>
         </div>
         <form class="py-4" v-on:submit.prevent>
             <input class="form-control rounded" type="date" name="date" v-model="date">
             <div class="input-group m-auto">
                 <input class="form-control rounded" type="text" name="name" v-model="name" maxlength="10" placeholder="イベント名">
-                <button class="btn btn-outline-primary" type="submit" v-on:click="registerTodo">登録</button>
             </div>
+            <small class="px-2 form-text text-muted">※最大10文字</small>
         </form>
     </div>
 </template>
@@ -86,6 +95,15 @@
 
                 return formatted_date;
             },
+            compareDate: function(todo_date){
+                const time = Date.parse(todo_date);
+                const now = new Date();
+                if(now<=time){
+                    return true;
+                }else {
+                    return false;
+                }
+            },
         }
     }
 
@@ -101,7 +119,15 @@
     flex-wrap: nowrap;
 }
 .todo-btn {
-    flex-grow: 2;
+    flex-grow: 1;
     border-radius: 9px;
+}
+.todo-btn-passed {
+    flex-grow: 1;
+    border-radius: 9px;
+    opacity: .4;
+}
+.delete-btn-passed {
+    opacity: .4;
 }
 </style>

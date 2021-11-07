@@ -2081,7 +2081,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   props: {
     selected_time: {
@@ -2242,6 +2241,14 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
@@ -2256,6 +2263,16 @@ __webpack_require__.r(__webpack_exports__);
     update: function update(selected_time) {
       this.selected_time = selected_time;
       this.$emit('holiday-click', selected_time);
+    },
+    getNow: function getNow(index) {
+      var time = Date.parse(index);
+      var now = new Date();
+
+      if (now <= time) {
+        return true;
+      } else {
+        return false;
+      }
     },
     getHoliday: function getHoliday() {
       var self = this;
@@ -2281,6 +2298,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -2363,6 +2389,16 @@ __webpack_require__.r(__webpack_exports__);
       var day = ("0" + date.getDate()).slice(-2);
       var formatted_date = year + "-" + month + "-" + day;
       return formatted_date;
+    },
+    compareDate: function compareDate(todo_date) {
+      var time = Date.parse(todo_date);
+      var now = new Date();
+
+      if (now <= time) {
+        return true;
+      } else {
+        return false;
+      }
     }
   }
 });
@@ -2373,13 +2409,8 @@ __webpack_require__.r(__webpack_exports__);
 /*!*****************************!*\
   !*** ./resources/js/app.js ***!
   \*****************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+/***/ ((__unused_webpack_module, __unused_webpack_exports, __webpack_require__) => {
 
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _vue_axios__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./vue-axios */ "./resources/js/vue-axios.js");
 /**
  * First we will load all of this project's JavaScript dependencies which
  * includes Vue and other libraries. It is a great starting point when
@@ -2388,11 +2419,6 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
 window.Vue = (__webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm.js")["default"]);
-
-
-Vue.use(_vue_axios__WEBPACK_IMPORTED_MODULE_1__["default"], {
-  axios: (axios__WEBPACK_IMPORTED_MODULE_0___default())
-});
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -2475,37 +2501,6 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 //     cluster: process.env.MIX_PUSHER_APP_CLUSTER,
 //     forceTLS: true
 // });
-
-/***/ }),
-
-/***/ "./resources/js/vue-axios.js":
-/*!***********************************!*\
-  !*** ./resources/js/vue-axios.js ***!
-  \***********************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-var VueAxiosPlugin = {};
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (VueAxiosPlugin.install = function (Vue, _ref) {
-  var axios = _ref.axios;
-  var csrf_token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-  axios.defaults.headers.common = {
-    "X-Requested-With": "XMLHttpRequest",
-    "X-CSRF-Token": csrf_token
-  };
-  Vue.axios = axios;
-  Object.defineProperties(Vue.prototype, {
-    axios: {
-      get: function get() {
-        return axios;
-      }
-    }
-  });
-});
 
 /***/ }),
 
@@ -6916,7 +6911,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.time-box[data-v-0b333f70] {\n    font-size: 1.5rem;\n}\n.holiday-box[data-v-0b333f70] {\n    overflow-y: scroll;\n    height: 500px;\n    cursor: pointer;\n}\n.holiday[data-v-0b333f70] {\n    width: 100%;\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.time-box[data-v-0b333f70] {\n    font-size: 1.5rem;\n}\n.holiday-box[data-v-0b333f70] {\n    overflow-y: scroll;\n    height: 500px;\n    cursor: pointer;\n}\n.holiday[data-v-0b333f70] {\n    width: 100%;\n}\n.holiday-passed[data-v-0b333f70] {\n    width: 100%;\n    opacity: .4;\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -6940,7 +6935,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.todo-section[data-v-2bd14908] {\n    overflow-y: scroll;\n    height: 400px;\n}\n.todo-box[data-v-2bd14908] {\n    display: flex;\n    flex-wrap: nowrap;\n}\n.todo-btn[data-v-2bd14908] {\n    flex-grow: 2;\n    border-radius: 9px;\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.todo-section[data-v-2bd14908] {\n    overflow-y: scroll;\n    height: 400px;\n}\n.todo-box[data-v-2bd14908] {\n    display: flex;\n    flex-wrap: nowrap;\n}\n.todo-btn[data-v-2bd14908] {\n    flex-grow: 1;\n    border-radius: 9px;\n}\n.todo-btn-passed[data-v-2bd14908] {\n    flex-grow: 1;\n    border-radius: 9px;\n    opacity: .4;\n}\n.delete-btn-passed[data-v-2bd14908] {\n    opacity: .4;\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -38700,10 +38695,10 @@ var render = function () {
     _vm._m(0),
     _vm._v(" "),
     _c("div", { staticClass: "time-section text-center p-4" }, [
-      _c("div", { staticClass: "p-4" }, [
-        _c("p", { staticClass: "until" }, [
-          _vm._v(_vm._s(_vm.selected_name) + "まで"),
-        ]),
+      _c("div", { staticClass: "p-2" }, [
+        _c("p", [_vm._v(_vm._s(_vm.selected_name) + "まで")]),
+        _vm._v(" "),
+        _c("p", [_vm._v("あと")]),
       ]),
       _vm._v(" "),
       _vm._m(1),
@@ -38724,17 +38719,13 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "time-box p-4" }, [
-      _c("p", { staticClass: "timer" }, [
-        _vm._v("あと"),
-        _c("span", { attrs: { id: "day" } }),
-        _vm._v("日と"),
-      ]),
+      _c("p", [_c("span", { attrs: { id: "day" } }), _vm._v("日と")]),
       _vm._v(" "),
       _c("p", [
         _c("span", { attrs: { id: "hour" } }),
-        _vm._v("時間\n            "),
+        _vm._v("時間"),
         _c("span", { attrs: { id: "min" } }),
-        _vm._v("分\n            "),
+        _vm._v("分"),
         _c("span", { attrs: { id: "sec" } }),
         _vm._v("秒"),
       ]),
@@ -38819,22 +38810,51 @@ var render = function () {
       { staticClass: "holiday-box" },
       _vm._l(_vm.holidays, function (holiday, index) {
         return _c("div", { key: index, staticClass: "border" }, [
-          _c(
-            "button",
-            {
-              staticClass: "btn holiday p-3",
-              on: {
-                click: function ($event) {
-                  return _vm.update(index)
-                },
-              },
-            },
-            [
-              _vm._v("\n                " + _vm._s(index)),
-              _c("br"),
-              _vm._v("\n                " + _vm._s(holiday) + "\n            "),
-            ]
-          ),
+          _vm.getNow(index)
+            ? _c("div", [
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn holiday p-3",
+                    on: {
+                      click: function ($event) {
+                        return _vm.update(index)
+                      },
+                    },
+                  },
+                  [
+                    _vm._v("\n                    " + _vm._s(index)),
+                    _c("br"),
+                    _vm._v(
+                      "\n                    " +
+                        _vm._s(holiday) +
+                        "\n                "
+                    ),
+                  ]
+                ),
+              ])
+            : _c("div", [
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn holiday-passed p-3",
+                    on: {
+                      click: function ($event) {
+                        return _vm.update(index)
+                      },
+                    },
+                  },
+                  [
+                    _vm._v("\n                    " + _vm._s(index)),
+                    _c("br"),
+                    _vm._v(
+                      "\n                    " +
+                        _vm._s(holiday) +
+                        "\n                "
+                    ),
+                  ]
+                ),
+              ]),
         ])
       }),
       0
@@ -38880,38 +38900,84 @@ var render = function () {
       "div",
       { staticClass: "todo-section" },
       _vm._l(_vm.todos, function (todo, index) {
-        return _c("div", { key: index, staticClass: "border todo-box" }, [
-          _c(
-            "button",
-            {
-              staticClass: "btn todo-btn py-3",
-              on: {
-                click: function ($event) {
-                  return _vm.update(todo.id)
-                },
-              },
-            },
-            [
-              _vm._v("\n                " + _vm._s(_vm.formatDate(todo.date))),
-              _c("br"),
-              _vm._v(
-                "\n                " + _vm._s(todo.name) + "\n            "
-              ),
-            ]
-          ),
-          _vm._v(" "),
-          _c(
-            "button",
-            {
-              staticClass: "btn delete-btn btn-outline-primary",
-              on: {
-                click: function ($event) {
-                  return _vm.deleteTodo(todo.id)
-                },
-              },
-            },
-            [_vm._v("削除")]
-          ),
+        return _c("div", { key: index, staticClass: "border" }, [
+          _vm.compareDate(todo.date)
+            ? _c("div", { staticClass: "todo-box" }, [
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn todo-btn py-3",
+                    on: {
+                      click: function ($event) {
+                        return _vm.update(todo.id)
+                      },
+                    },
+                  },
+                  [
+                    _vm._v(
+                      "\n                    " +
+                        _vm._s(_vm.formatDate(todo.date))
+                    ),
+                    _c("br"),
+                    _vm._v(
+                      "\n                    " +
+                        _vm._s(todo.name) +
+                        "\n                "
+                    ),
+                  ]
+                ),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn delete-btn btn-outline-primary",
+                    on: {
+                      click: function ($event) {
+                        return _vm.deleteTodo(todo.id)
+                      },
+                    },
+                  },
+                  [_vm._v("削除")]
+                ),
+              ])
+            : _c("div", { staticClass: "todo-box" }, [
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn todo-btn-passed py-3",
+                    on: {
+                      click: function ($event) {
+                        return _vm.update(todo.id)
+                      },
+                    },
+                  },
+                  [
+                    _vm._v(
+                      "\n                    " +
+                        _vm._s(_vm.formatDate(todo.date))
+                    ),
+                    _c("br"),
+                    _vm._v(
+                      "\n                    " +
+                        _vm._s(todo.name) +
+                        "\n                "
+                    ),
+                  ]
+                ),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn delete-btn-passed btn-outline-primary",
+                    on: {
+                      click: function ($event) {
+                        return _vm.deleteTodo(todo.id)
+                      },
+                    },
+                  },
+                  [_vm._v("削除")]
+                ),
+              ]),
         ])
       }),
       0
@@ -38977,16 +39043,10 @@ var render = function () {
               },
             },
           }),
-          _vm._v(" "),
-          _c(
-            "button",
-            {
-              staticClass: "btn btn-outline-primary",
-              attrs: { type: "submit" },
-              on: { click: _vm.registerTodo },
-            },
-            [_vm._v("登録")]
-          ),
+        ]),
+        _vm._v(" "),
+        _c("small", { staticClass: "px-2 form-text text-muted" }, [
+          _vm._v("※最大10文字"),
         ]),
       ]
     ),

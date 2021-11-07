@@ -8,6 +8,10 @@ require('./bootstrap');
 
 window.Vue = require('vue').default;
 
+import axios from "axios";
+import VueAxiosPlugin from "./vue-axios";
+Vue.use(VueAxiosPlugin, { axios: axios });
+
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue

@@ -10,7 +10,7 @@ class ToDoController extends Controller
 {
     public function getTodos()
     {
-        $todos = Todo::all();
+        $todos = Todo::orderBy('date')->get();
         return $todos;
     }
 

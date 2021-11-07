@@ -1,14 +1,15 @@
 <template>
-    <div class="row">
-        <div class="col-md-8">
-            <div class="time-box text-center p-4">
+    <div class="p-4">
+        <div class="text-center"><h3>カウントダウン</h3></div>
+        <div class="time-section text-center p-4">
+            <div class="p-4">
                 <p class="until">{{ selected_name }}まで</p>
-                <p class="timer">あと
-                <span id="day"></span>日と
-                <span id="hour"></span>時間
+            </div>
+            <div class="time-box p-4">
+                <p class="timer">あと<span id="day"></span>日と</p>
+                <p><span id="hour"></span>時間
                 <span id="min"></span>分
-                <span id="sec"></span>秒
-                </p>
+                <span id="sec"></span>秒</p>
             </div>
         </div>
     </div>
@@ -29,7 +30,7 @@
         data () {
             return {
                 selected_time_1: "",
-                selected_name: "　",
+                selected_name: "明日",
                 holiday: [],
                 countdown_timer: 0,
                 todo: []
@@ -47,7 +48,19 @@
                 this.countdown();
             },
         },
+        mounted: function(){
+            this.getTomorrow();
+        },
         methods: {
+            getTomorrow: function() {
+                const date = new Date();
+                date.setDate(date.getDate() + 1);
+                const year  = date.getFullYear();
+                const month = date.getMonth() + 1;
+                const day   = date.getDate();
+                this.selected_time_1 = String(year) + "-" + String(month) + "-" + String(day);
+                this.countdown();
+            },
             countdown: function() {
                 const now=new Date();//今の時間    
                 const time = Date.parse(this.selected_time_1);
@@ -94,9 +107,20 @@
 </script>
 
 <style scoped>
+.time-section {
+    font-size: 1.3rem;
+}
 .time-box {
-    font-size: 1.5rem;
-    
+    padding: 0.5em 1em;
+    margin: 2em 0;
+    color: #5989cf;
+    background: #c6e4ff;
+    border-bottom: solid 6px #fffff0;
+    border-radius: 9px;
+}
+.time-box p {
+    margin: 0; 
+    padding: 0;
 }
 .holiday-box {
     overflow-y: scroll;

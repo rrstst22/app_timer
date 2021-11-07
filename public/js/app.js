@@ -2081,6 +2081,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   props: {
     selected_time: {
@@ -2095,7 +2096,7 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       selected_time_1: "",
-      selected_name: "　",
+      selected_name: "明日",
       holiday: [],
       countdown_timer: 0,
       todo: []
@@ -2113,7 +2114,19 @@ __webpack_require__.r(__webpack_exports__);
       this.countdown();
     }
   },
+  mounted: function mounted() {
+    this.getTomorrow();
+  },
   methods: {
+    getTomorrow: function getTomorrow() {
+      var date = new Date();
+      date.setDate(date.getDate() + 1);
+      var year = date.getFullYear();
+      var month = date.getMonth() + 1;
+      var day = date.getDate();
+      this.selected_time_1 = String(year) + "-" + String(month) + "-" + String(day);
+      this.countdown();
+    },
     countdown: function countdown() {
       var now = new Date(); //今の時間    
 
@@ -2223,6 +2236,12 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
@@ -2278,17 +2297,22 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
       todos: [],
       selected_time: 0,
       date: "",
-      name: ""
+      name: null
     };
   },
   mounted: function mounted() {
-    //createdにすると動かない
     this.getTodos();
   },
   methods: {
@@ -2316,16 +2340,20 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     registerTodo: function registerTodo() {
-      var self = this;
-      axios.post('vue/register-todo', {
-        date: this.date,
-        name: this.name
-      }).then(function (response) {
-        self.date = "", self.name = "";
-        self.getTodos(); // self.todos = response.data;
-      })["catch"](function (error) {
-        alert(error);
-      });
+      if (this.name) {
+        var self = this;
+        axios.post('vue/register-todo', {
+          date: this.date,
+          name: this.name
+        }).then(function (response) {
+          self.date = "", self.name = "";
+          self.getTodos(); // self.todos = response.data;
+        })["catch"](function (error) {
+          alert(error);
+        });
+      } else {
+        alert("イベント名を入力してください。");
+      }
     },
     formatDate: function formatDate(todo_date) {
       var time = Date.parse(todo_date);
@@ -2345,8 +2373,13 @@ __webpack_require__.r(__webpack_exports__);
 /*!*****************************!*\
   !*** ./resources/js/app.js ***!
   \*****************************/
-/***/ ((__unused_webpack_module, __unused_webpack_exports, __webpack_require__) => {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _vue_axios__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./vue-axios */ "./resources/js/vue-axios.js");
 /**
  * First we will load all of this project's JavaScript dependencies which
  * includes Vue and other libraries. It is a great starting point when
@@ -2355,6 +2388,11 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
 window.Vue = (__webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm.js")["default"]);
+
+
+Vue.use(_vue_axios__WEBPACK_IMPORTED_MODULE_1__["default"], {
+  axios: (axios__WEBPACK_IMPORTED_MODULE_0___default())
+});
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -2437,6 +2475,37 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 //     cluster: process.env.MIX_PUSHER_APP_CLUSTER,
 //     forceTLS: true
 // });
+
+/***/ }),
+
+/***/ "./resources/js/vue-axios.js":
+/*!***********************************!*\
+  !*** ./resources/js/vue-axios.js ***!
+  \***********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+var VueAxiosPlugin = {};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (VueAxiosPlugin.install = function (Vue, _ref) {
+  var axios = _ref.axios;
+  var csrf_token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+  axios.defaults.headers.common = {
+    "X-Requested-With": "XMLHttpRequest",
+    "X-CSRF-Token": csrf_token
+  };
+  Vue.axios = axios;
+  Object.defineProperties(Vue.prototype, {
+    axios: {
+      get: function get() {
+        return axios;
+      }
+    }
+  });
+});
 
 /***/ }),
 
@@ -6823,7 +6892,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.time-box[data-v-07289d52] {\n    font-size: 1.5rem;\n}\n.holiday-box[data-v-07289d52] {\n    overflow-y: scroll;\n    height: 500px;\n    cursor: pointer;\n}\n.holiday[data-v-07289d52] {\n    width: 100%;\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.time-section[data-v-07289d52] {\n    font-size: 1.3rem;\n}\n.time-box[data-v-07289d52] {\n    padding: 0.5em 1em;\n    margin: 2em 0;\n    color: #5989cf;\n    background: #c6e4ff;\n    border-bottom: solid 6px #fffff0;\n    border-radius: 9px;\n}\n.time-box p[data-v-07289d52] {\n    margin: 0; \n    padding: 0;\n}\n.holiday-box[data-v-07289d52] {\n    overflow-y: scroll;\n    height: 500px;\n    cursor: pointer;\n}\n.holiday[data-v-07289d52] {\n    width: 100%;\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -6871,7 +6940,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.time-box[data-v-2bd14908] {\n    font-size: 1.5rem;\n}\n.todo-box[data-v-2bd14908] {\n    overflow-y: scroll;\n    height: 500px;\n    /* cursor: pointer; */\n}\n.holiday[data-v-2bd14908] {\n    width: 80%;\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.todo-section[data-v-2bd14908] {\n    overflow-y: scroll;\n    height: 400px;\n}\n.todo-box[data-v-2bd14908] {\n    display: flex;\n    flex-wrap: nowrap;\n}\n.todo-btn[data-v-2bd14908] {\n    flex-grow: 2;\n    border-radius: 9px;\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -38627,15 +38696,17 @@ var render = function () {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "row" }, [
-    _c("div", { staticClass: "col-md-8" }, [
-      _c("div", { staticClass: "time-box text-center p-4" }, [
+  return _c("div", { staticClass: "p-4" }, [
+    _vm._m(0),
+    _vm._v(" "),
+    _c("div", { staticClass: "time-section text-center p-4" }, [
+      _c("div", { staticClass: "p-4" }, [
         _c("p", { staticClass: "until" }, [
           _vm._v(_vm._s(_vm.selected_name) + "まで"),
         ]),
-        _vm._v(" "),
-        _vm._m(0),
       ]),
+      _vm._v(" "),
+      _vm._m(1),
     ]),
   ])
 }
@@ -38644,16 +38715,29 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("p", { staticClass: "timer" }, [
-      _vm._v("あと\n            "),
-      _c("span", { attrs: { id: "day" } }),
-      _vm._v("日と\n            "),
-      _c("span", { attrs: { id: "hour" } }),
-      _vm._v("時間\n            "),
-      _c("span", { attrs: { id: "min" } }),
-      _vm._v("分\n            "),
-      _c("span", { attrs: { id: "sec" } }),
-      _vm._v("秒\n            "),
+    return _c("div", { staticClass: "text-center" }, [
+      _c("h3", [_vm._v("カウントダウン")]),
+    ])
+  },
+  function () {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "time-box p-4" }, [
+      _c("p", { staticClass: "timer" }, [
+        _vm._v("あと"),
+        _c("span", { attrs: { id: "day" } }),
+        _vm._v("日と"),
+      ]),
+      _vm._v(" "),
+      _c("p", [
+        _c("span", { attrs: { id: "hour" } }),
+        _vm._v("時間\n            "),
+        _c("span", { attrs: { id: "min" } }),
+        _vm._v("分\n            "),
+        _c("span", { attrs: { id: "sec" } }),
+        _vm._v("秒"),
+      ]),
     ])
   },
 ]
@@ -38727,29 +38811,46 @@ var render = function () {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    { staticClass: "holiday-box" },
-    _vm._l(_vm.holidays, function (holiday, index) {
-      return _c("div", { key: index, staticClass: "border" }, [
-        _c(
-          "button",
-          {
-            staticClass: "btn holiday p-4",
-            on: {
-              click: function ($event) {
-                return _vm.update(index)
+  return _c("div", { staticClass: "p-4" }, [
+    _vm._m(0),
+    _vm._v(" "),
+    _c(
+      "div",
+      { staticClass: "holiday-box" },
+      _vm._l(_vm.holidays, function (holiday, index) {
+        return _c("div", { key: index, staticClass: "border" }, [
+          _c(
+            "button",
+            {
+              staticClass: "btn holiday p-3",
+              on: {
+                click: function ($event) {
+                  return _vm.update(index)
+                },
               },
             },
-          },
-          [_vm._v(_vm._s(index) + " " + _vm._s(holiday))]
-        ),
-      ])
-    }),
-    0
-  )
+            [
+              _vm._v("\n                " + _vm._s(index)),
+              _c("br"),
+              _vm._v("\n                " + _vm._s(holiday) + "\n            "),
+            ]
+          ),
+        ])
+      }),
+      0
+    ),
+  ])
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function () {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "text-center" }, [
+      _c("h3", [_vm._v("祝日")]),
+    ])
+  },
+]
 render._withStripped = true
 
 
@@ -38772,16 +38873,18 @@ var render = function () {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", [
+  return _c("div", { staticClass: "p-4" }, [
+    _vm._m(0),
+    _vm._v(" "),
     _c(
       "div",
-      { staticClass: "todo-box" },
+      { staticClass: "todo-section" },
       _vm._l(_vm.todos, function (todo, index) {
-        return _c("div", { key: index, staticClass: "border" }, [
+        return _c("div", { key: index, staticClass: "border todo-box" }, [
           _c(
             "button",
             {
-              staticClass: "btn holiday p-4",
+              staticClass: "btn todo-btn py-3",
               on: {
                 click: function ($event) {
                   return _vm.update(todo.id)
@@ -38789,8 +38892,10 @@ var render = function () {
               },
             },
             [
+              _vm._v("\n                " + _vm._s(_vm.formatDate(todo.date))),
+              _c("br"),
               _vm._v(
-                _vm._s(_vm.formatDate(todo.date)) + " " + _vm._s(todo.name)
+                "\n                " + _vm._s(todo.name) + "\n            "
               ),
             ]
           ),
@@ -38798,6 +38903,7 @@ var render = function () {
           _c(
             "button",
             {
+              staticClass: "btn delete-btn btn-outline-primary",
               on: {
                 click: function ($event) {
                   return _vm.deleteTodo(todo.id)
@@ -38814,6 +38920,7 @@ var render = function () {
     _c(
       "form",
       {
+        staticClass: "py-4",
         on: {
           submit: function ($event) {
             $event.preventDefault()
@@ -38830,6 +38937,7 @@ var render = function () {
               expression: "date",
             },
           ],
+          staticClass: "form-control rounded",
           attrs: { type: "date", name: "date" },
           domProps: { value: _vm.date },
           on: {
@@ -38842,37 +38950,58 @@ var render = function () {
           },
         }),
         _vm._v(" "),
-        _c("input", {
-          directives: [
+        _c("div", { staticClass: "input-group m-auto" }, [
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.name,
+                expression: "name",
+              },
+            ],
+            staticClass: "form-control rounded",
+            attrs: {
+              type: "text",
+              name: "name",
+              maxlength: "10",
+              placeholder: "イベント名",
+            },
+            domProps: { value: _vm.name },
+            on: {
+              input: function ($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.name = $event.target.value
+              },
+            },
+          }),
+          _vm._v(" "),
+          _c(
+            "button",
             {
-              name: "model",
-              rawName: "v-model",
-              value: _vm.name,
-              expression: "name",
+              staticClass: "btn btn-outline-primary",
+              attrs: { type: "submit" },
+              on: { click: _vm.registerTodo },
             },
-          ],
-          attrs: { type: "text", name: "name" },
-          domProps: { value: _vm.name },
-          on: {
-            input: function ($event) {
-              if ($event.target.composing) {
-                return
-              }
-              _vm.name = $event.target.value
-            },
-          },
-        }),
-        _vm._v(" "),
-        _c(
-          "button",
-          { attrs: { type: "submit" }, on: { click: _vm.registerTodo } },
-          [_vm._v("登録")]
-        ),
+            [_vm._v("登録")]
+          ),
+        ]),
       ]
     ),
   ])
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function () {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "text-center" }, [
+      _c("h3", [_vm._v("ToDoリスト")]),
+    ])
+  },
+]
 render._withStripped = true
 
 

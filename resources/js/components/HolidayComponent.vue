@@ -1,9 +1,15 @@
 <template>
+<div class="p-4">
+    <div class="text-center"><h3>祝日</h3></div>
     <div class="holiday-box">
         <div class="border" v-for="(holiday, index) in holidays" v-bind:key="index">
-            <button class="btn holiday p-4" v-on:click="update(index)">{{ index }} {{ holiday }}</button>
+            <button class="btn holiday p-3" v-on:click="update(index)">
+                {{ index }}<br>
+                {{ holiday }}
+            </button>
         </div>
     </div>
+</div>
 </template>
 
 <script>

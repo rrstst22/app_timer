@@ -1,7 +1,10 @@
 <template>
     <div>
-        <div class="border" v-for="(todo, index) in todos" v-bind:key="index">
-            <button class="btn holiday p-4" v-on:click="update(index)">{{ todo.date }} {{ todo.name }}</button>
+        <div class="todo-box">
+            <div class="border" v-for="(todo, index) in todos" v-bind:key="index">
+                <button class="" v-on:click="update(index)">{{ todo.date }} {{ todo.name }}</button>
+                <button v-on:click="deleteTodo(todo.id)">削除</button>
+            </div>
         </div>
         <form v-on:submit.prevent>
             <!-- <input type="text" name="year">
@@ -31,6 +34,16 @@
             update: function(index) {
                 this.selected_time = index;
             },
+            deleteTodo: function(todo_id) {
+                alert(todo_id);
+                axios.delete('vue/delete-todo', {
+                    data: {id: todo_id}
+                })
+                    .then(function(response){
+                    }).catch(function(error){
+                        alert(error);
+                });          
+            },
             getTodos: function() {
                 var self = this;
                 axios.get('get-todos')
@@ -47,6 +60,8 @@
                     name: this.name
                 })
                     .then(function(response){
+                        self.date = "",
+                        self.name = ""
                         // self.todos = response.data;
                     }).catch(function(error){
                         alert(error);
@@ -62,7 +77,7 @@
     font-size: 1.5rem;
     
 }
-.holiday-box {
+.todo-box {
     overflow-y: scroll;
     height: 500px;
     cursor: pointer;

@@ -21,7 +21,7 @@ window.Vue = require('vue').default;
 
 Vue.component('example-component', require('./components/ExampleComponent.vue').default);
 Vue.component('countdown-component', require('./components/CountDownComponent.vue').default);
-Vue.component('todo-component', require('./components/ToDoComponent.vue').default);
+Vue.component('todo-component', require('./components/TodoComponent.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -33,7 +33,9 @@ const app = new Vue({
     el: '#app',
     data() {
         return {
-            on_arrow: true
-        }
-    }
+            on_arrow: true,
+            selected_time: ""
+        }  
+    },
+    
 });

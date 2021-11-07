@@ -13,9 +13,21 @@ class TodoTest extends TestCase
      *
      * @return void
      */
-    public function test_example()
+    public function testRegisterTodo()
     {
-        $response = $this->get('/');
+        $response = $this->post('vue/register-todo', [
+            'date' => "31-12-2021",
+            'name' => "Test",
+        ]);
+
+        $response->assertStatus(200);
+    }
+
+    public function testDeleteTodo()
+    {
+        $response = $this->delete('vue/delete-todo', [
+            'id' => "15"
+        ]);
 
         $response->assertStatus(200);
     }

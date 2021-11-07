@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Todo;
+use DateTime;
 
 class ToDoController extends Controller
 {
@@ -16,14 +17,19 @@ class ToDoController extends Controller
     public function registerTodo(Request $request)
     {
         $date = $request->date;
-        $date = strtotime($date);
+        $date = new DateTime($date);
+        // $date = strtotime($date);
 
         Todo::create(
             array(
                 'date' => $date,
-                'name' => request->name,
+                'name' => $request->name,
                 'detail' => "テスト",
             )
         );
+    }
+
+    public function deleteTodo(Request $request) {
+        Todo::findOrFail($request->id)->delete();
     }
 }

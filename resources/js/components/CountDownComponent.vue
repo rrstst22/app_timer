@@ -3,7 +3,7 @@
         <div class="text-center"><h3>カウントダウン</h3></div>
         <div class="time-section text-center p-4">
             <div class="p-2">
-                <p>{{ selected_name }}まで</p>
+                <p>{{ target_event }}まで</p>
                 <p>あと</p>
             </div>
             <div class="time-box p-4">
@@ -17,86 +17,105 @@
 <script>
     export default {
         props: {
-            selected_time: {
-                type: String,
-                default: ""
-            },
             selected_todo: {
                 type: Number,
                 default: 0
-            }
+            },
+            selected_holiday: {
+                type: String,
+                default: ""
+            },
         },
         data () {
             return {
-                selected_time_1: "",
-                selected_name: "明日",
+                target_time: "",
+                target_event: "明日",
                 holiday: [],
-                countdown_timer: 0,
-                todo: []
+                todo: [],
+                countdown_timer: 0, //カウントダウンストップ用
             }
         },
         watch: {
-            selected_time: function() {
-                clearTimeout(this.countdown_timer);
-                this.getHoliday();
-                this.countdown();
+            //Todoのクリックを検知
+            selected_todo: function(selected_todo) {
+                if(selected_todo != 0) {
+                    clearTimeout(this.countdown_timer);
+                    this.getTodo();
+                    this.countdown();
+                }
             },
-            selected_todo: function() {
-                clearTimeout(this.countdown_timer);
-                this.getTodo();
-                this.countdown();
+            //祝日のクリックを検知
+            selected_holiday: function(selected_holiday) {
+                if(selected_holiday != "") {
+                    clearTimeout(this.countdown_timer);
+                    this.getHoliday();
+                    this.countdown();
+                }
             },
         },
-        mounted: function(){
-            this.getTomorrow();
+        mounted: function() {
+            this.getTomorrow(); //初期表示（明日）
         },
         methods: {
+            //カウントダウン
+            countdown: function() {
+                const now = new Date();
+                const time = Date.parse(this.target_time); //文字列型からdatetime型へ変換
+                const date = new Date(time);
+                const differ=date.getTime()-now.getTime();
+
+                //日、時、分、秒の値を計算
+                let day = Math.floor(differ/1000/60/60/24);
+                const hour = Math.floor(differ/1000/60/60)%24;
+                const min = Math.floor(differ/1000/60)%60;
+                const sec = Math.floor(differ/1000)%60;
+
+                if(day < 0) {
+                    day = day + 1; //マイナスの場合一日ずれるので+1
+                }
+
+                //一桁になった時に0を付与
+                document.getElementById("day").textContent=String(day).padStart(2,"0"); 
+                document.getElementById("hour").textContent=String(hour).padStart(2,"0"); 
+                document.getElementById("min").textContent=String(min).padStart(2,"0");
+                document.getElementById("sec").textContent=String(sec).padStart(2,"0");
+
+                this.countdown_timer = window.setTimeout(this.countdown,1000);
+            },
+            //明日の日付を取得
             getTomorrow: function() {
                 const date = new Date();
-                date.setDate(date.getDate() + 1);
+                date.setDate(date.getDate() + 1); //dateを明日にセット
+
+                //datetime型を文字列へ変換
                 const year  = date.getFullYear();
                 const month = date.getMonth() + 1;
                 const day   = date.getDate();
-                this.selected_time_1 = String(year) + "-" + String(month) + "-" + String(day);
+                this.target_time = String(year) + "-" + String(month) + "-" + String(day);
+
                 this.countdown();
             },
-            countdown: function() {
-                const now=new Date();//今の時間    
-                const time = Date.parse(this.selected_time_1);
-                const date = new Date(time);
-                const differ=date.getTime()-now.getTime();//あと何秒か計算
-
-                const day=Math.floor(differ/1000/60/60/24);
-                const hour=Math.floor(differ/1000/60/60)%24;
-                const min=Math.floor(differ/1000/60)%60;//1時間=60分だからね
-                const sec=Math.floor(differ/1000)%60;//ミリ秒を秒に直してから
-
-                document.getElementById("day").textContent=String(day).padStart(2,"0"); //一桁になった時0がつくように
-                document.getElementById("hour").textContent=String(hour).padStart(2,"0"); //一桁になった時0がつくように
-                document.getElementById("min").textContent=String(min).padStart(2,"0");
-                document.getElementById("sec").textContent=String(sec).padStart(2,"0");
-                this.countdown_timer = window.setTimeout(this.countdown,1000);//1秒毎に繰り返す
-            },
-            getHoliday: function() {
+            //Todo一覧を取得
+            getTodo: function() {
                 var self = this;
-                axios.get('get-holiday', {params:{date: this.selected_time}})
-                    .then(function(response){
-                        self.holiday = response.data;
-                        self.selected_time_1 = self.selected_time
-                        self.selected_name = self.holiday.name
-                    }).catch(function(error){
+                axios.get('vue/get-todo', {params:{id: this.selected_todo}})
+                    .then(function(response) {
+                        self.todo = response.data;
+                        self.target_time = response.data[0].date;
+                        self.target_event = response.data[0].name;
+                    }).catch(function(error) {
                         alert(error);
                 });
             },
-            getTodo: function() {
+            //祝日一覧を取得
+            getHoliday: function() {
                 var self = this;
-                axios.get('get-todo', {params:{id: this.selected_todo}})
-                    .then(function(response){
-                        self.todo = response.data;
-                        console.log(response.data[0].name);
-                        self.selected_time_1 = response.data[0].date;
-                        self.selected_name = response.data[0].name;
-                    }).catch(function(error){
+                axios.get('vue/get-holiday', {params:{date: this.selected_holiday}})
+                    .then(function(response) {
+                        self.holiday = response.data;
+                        self.target_time = self.selected_holiday;
+                        self.target_event = self.holiday.name;
+                    }).catch(function(error) {
                         alert(error);
                 });
             },
@@ -120,13 +139,5 @@
 .time-box p {
     margin: 0; 
     padding: 0;
-}
-.holiday-box {
-    overflow-y: scroll;
-    height: 500px;
-    cursor: pointer;
-}
-.holiday {
-    width: 100%;
 }
 </style>

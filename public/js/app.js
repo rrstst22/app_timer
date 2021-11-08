@@ -2083,134 +2083,113 @@ __webpack_require__.r(__webpack_exports__);
 //
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   props: {
-    selected_time: {
-      type: String,
-      "default": ""
-    },
     selected_todo: {
       type: Number,
       "default": 0
+    },
+    selected_holiday: {
+      type: String,
+      "default": ""
     }
   },
   data: function data() {
     return {
-      selected_time_1: "",
-      selected_name: "明日",
+      target_time: "",
+      target_event: "明日",
       holiday: [],
-      countdown_timer: 0,
-      todo: []
+      todo: [],
+      countdown_timer: 0 //カウントダウンストップ用
+
     };
   },
   watch: {
-    selected_time: function selected_time() {
-      clearTimeout(this.countdown_timer);
-      this.getHoliday();
-      this.countdown();
+    //Todoのクリックを検知
+    selected_todo: function selected_todo(_selected_todo) {
+      if (_selected_todo != 0) {
+        clearTimeout(this.countdown_timer);
+        this.getTodo();
+        this.countdown();
+      }
     },
-    selected_todo: function selected_todo() {
-      clearTimeout(this.countdown_timer);
-      this.getTodo();
-      this.countdown();
+    //祝日のクリックを検知
+    selected_holiday: function selected_holiday(_selected_holiday) {
+      if (_selected_holiday != "") {
+        clearTimeout(this.countdown_timer);
+        this.getHoliday();
+        this.countdown();
+      }
     }
   },
   mounted: function mounted() {
-    this.getTomorrow();
+    this.getTomorrow(); //初期表示（明日）
   },
   methods: {
-    getTomorrow: function getTomorrow() {
-      var date = new Date();
-      date.setDate(date.getDate() + 1);
-      var year = date.getFullYear();
-      var month = date.getMonth() + 1;
-      var day = date.getDate();
-      this.selected_time_1 = String(year) + "-" + String(month) + "-" + String(day);
-      this.countdown();
-    },
+    //カウントダウン
     countdown: function countdown() {
-      var now = new Date(); //今の時間    
+      var now = new Date();
+      var time = Date.parse(this.target_time); //文字列型からdatetime型へ変換
 
-      var time = Date.parse(this.selected_time_1);
       var date = new Date(time);
-      var differ = date.getTime() - now.getTime(); //あと何秒か計算
+      var differ = date.getTime() - now.getTime(); //日、時、分、秒の値を計算
 
       var day = Math.floor(differ / 1000 / 60 / 60 / 24);
       var hour = Math.floor(differ / 1000 / 60 / 60) % 24;
-      var min = Math.floor(differ / 1000 / 60) % 60; //1時間=60分だからね
+      var min = Math.floor(differ / 1000 / 60) % 60;
+      var sec = Math.floor(differ / 1000) % 60;
 
-      var sec = Math.floor(differ / 1000) % 60; //ミリ秒を秒に直してから
+      if (day < 0) {
+        day = day + 1; //マイナスの場合一日ずれるので+1
+      } //一桁になった時に0を付与
 
-      document.getElementById("day").textContent = String(day).padStart(2, "0"); //一桁になった時0がつくように
 
-      document.getElementById("hour").textContent = String(hour).padStart(2, "0"); //一桁になった時0がつくように
-
+      document.getElementById("day").textContent = String(day).padStart(2, "0");
+      document.getElementById("hour").textContent = String(hour).padStart(2, "0");
       document.getElementById("min").textContent = String(min).padStart(2, "0");
       document.getElementById("sec").textContent = String(sec).padStart(2, "0");
-      this.countdown_timer = window.setTimeout(this.countdown, 1000); //1秒毎に繰り返す
+      this.countdown_timer = window.setTimeout(this.countdown, 1000);
     },
-    getHoliday: function getHoliday() {
-      var self = this;
-      axios.get('get-holiday', {
-        params: {
-          date: this.selected_time
-        }
-      }).then(function (response) {
-        self.holiday = response.data;
-        self.selected_time_1 = self.selected_time;
-        self.selected_name = self.holiday.name;
-      })["catch"](function (error) {
-        alert(error);
-      });
+    //明日の日付を取得
+    getTomorrow: function getTomorrow() {
+      var date = new Date();
+      date.setDate(date.getDate() + 1); //dateを明日にセット
+      //datetime型を文字列へ変換
+
+      var year = date.getFullYear();
+      var month = date.getMonth() + 1;
+      var day = date.getDate();
+      this.target_time = String(year) + "-" + String(month) + "-" + String(day);
+      this.countdown();
     },
+    //Todo一覧を取得
     getTodo: function getTodo() {
       var self = this;
-      axios.get('get-todo', {
+      axios.get('vue/get-todo', {
         params: {
           id: this.selected_todo
         }
       }).then(function (response) {
         self.todo = response.data;
-        console.log(response.data[0].name);
-        self.selected_time_1 = response.data[0].date;
-        self.selected_name = response.data[0].name;
+        self.target_time = response.data[0].date;
+        self.target_event = response.data[0].name;
+      })["catch"](function (error) {
+        alert(error);
+      });
+    },
+    //祝日一覧を取得
+    getHoliday: function getHoliday() {
+      var self = this;
+      axios.get('vue/get-holiday', {
+        params: {
+          date: this.selected_holiday
+        }
+      }).then(function (response) {
+        self.holiday = response.data;
+        self.target_time = self.selected_holiday;
+        self.target_event = self.holiday.name;
       })["catch"](function (error) {
         alert(error);
       });
     }
-  }
-});
-
-/***/ }),
-
-/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/ExampleComponent.vue?vue&type=script&lang=js&":
-/*!***********************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/ExampleComponent.vue?vue&type=script&lang=js& ***!
-  \***********************************************************************************************************************************************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  mounted: function mounted() {
-    console.log('Component mounted.');
   }
 });
 
@@ -2249,23 +2228,45 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
-      holidays: [],
-      selected_time: "2021-11-07"
+      holidays: []
     };
   },
   mounted: function mounted() {
-    this.getHoliday();
+    this.getHolidays();
   },
   methods: {
-    update: function update(selected_time) {
-      this.selected_time = selected_time;
-      this.$emit('holiday-click', selected_time);
+    //選択した祝日を親コンポーネントへ送信
+    update: function update(selected_holiday) {
+      this.$emit('holiday-click', selected_holiday);
+      this.closeModal();
+    },
+    //モーダルウィンドウをクローズ
+    closeModal: function closeModal() {
       this.$emit('todo-click-c');
     },
-    getNow: function getNow(index) {
+    //祝日リストを取得
+    getHolidays: function getHolidays() {
+      var self = this;
+      axios.get('vue/get-holidays').then(function (response) {
+        self.holidays = response.data;
+      })["catch"](function (error) {
+        alert(error);
+      });
+    },
+    //今日の日付とイベントの日付を比較
+    compareDate: function compareDate(index) {
       var time = Date.parse(index);
       var now = new Date();
 
@@ -2274,14 +2275,6 @@ __webpack_require__.r(__webpack_exports__);
       } else {
         return false;
       }
-    },
-    getHoliday: function getHoliday() {
-      var self = this;
-      axios.get('get-holidays').then(function (response) {
-        self.holidays = response.data;
-      })["catch"](function (error) {
-        alert(error);
-      });
     }
   }
 });
@@ -2330,23 +2323,42 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
       todos: [],
-      selected_time: 0,
+      selected_todo: 0,
       date: "",
-      name: null
+      event_name: null
     };
   },
   mounted: function mounted() {
     this.getTodos();
   },
   methods: {
-    update: function update(selected_time) {
-      this.$emit('todo-click', selected_time);
+    //選択したTodoを親コンポーネントへ送信
+    update: function update(selected_todo) {
+      this.$emit('todo-click', selected_todo);
+      this.closeModal();
+    },
+    //モーダルウィンドウをクローズ
+    closeModal: function closeModal() {
       this.$emit('todo-click-c');
     },
+    //Todoリストを削除
     deleteTodo: function deleteTodo(todo_id) {
       var self = this;
       axios["delete"]('vue/delete-todo', {
@@ -2359,23 +2371,26 @@ __webpack_require__.r(__webpack_exports__);
         alert(error);
       });
     },
+    //Todoリストを取得
     getTodos: function getTodos() {
       var self = this;
-      axios.get('get-todos').then(function (response) {
+      axios.get('vue/get-todos').then(function (response) {
         self.todos = response.data;
       })["catch"](function (error) {
         alert(error);
       });
     },
+    //Todoを登録
     registerTodo: function registerTodo() {
-      if (this.name) {
+      //Null処理
+      if (this.event_name) {
         var self = this;
         axios.post('vue/register-todo', {
           date: this.date,
-          name: this.name
+          name: this.event_name
         }).then(function (response) {
-          self.date = "", self.name = "";
-          self.getTodos(); // self.todos = response.data;
+          self.date = "", self.event_name = "";
+          self.getTodos(); //Todoリスト更新
         })["catch"](function (error) {
           alert(error);
         });
@@ -2383,18 +2398,23 @@ __webpack_require__.r(__webpack_exports__);
         alert("イベント名を入力してください。");
       }
     },
+    //日付の表示形式を指定
     formatDate: function formatDate(todo_date) {
+      //文字列をdatetime型へ変換
       var time = Date.parse(todo_date);
-      var date = new Date(time);
+      var date = new Date(time); //年月日を取得し、フォーマットを作成
+
       var year = date.getFullYear();
       var month = ("0" + (date.getMonth() + 1)).slice(-2);
       var day = ("0" + date.getDate()).slice(-2);
       var formatted_date = year + "-" + month + "-" + day;
       return formatted_date;
     },
+    //今日の日付とイベントの日付を比較
     compareDate: function compareDate(todo_date) {
-      var time = Date.parse(todo_date);
-      var now = new Date();
+      var time = Date.parse(todo_date); //文字列をdatetime型へ変換
+
+      var now = new Date(); //今日の日付を取得
 
       if (now <= time) {
         return true;
@@ -2431,7 +2451,6 @@ window.Vue = (__webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm.js
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
-Vue.component('example-component', (__webpack_require__(/*! ./components/ExampleComponent.vue */ "./resources/js/components/ExampleComponent.vue")["default"]));
 Vue.component('countdown-component', (__webpack_require__(/*! ./components/CountDownComponent.vue */ "./resources/js/components/CountDownComponent.vue")["default"]));
 Vue.component('holiday-component', (__webpack_require__(/*! ./components/HolidayComponent.vue */ "./resources/js/components/HolidayComponent.vue")["default"]));
 Vue.component('todo-component', (__webpack_require__(/*! ./components/TodoComponent.vue */ "./resources/js/components/TodoComponent.vue")["default"]));
@@ -2446,11 +2465,12 @@ var app = new Vue({
   data: function data() {
     return {
       on_arrow: true,
-      selected_time: "",
+      //サイドバー用
+      selected_holiday: "",
       selected_todo: 0,
-      on_modal_mode: false,
-      show_room_content: true,
-      show_todo: true
+      show_todo: true,
+      show_holiday: true,
+      on_modal_mode: false
     };
   },
   mounted: function mounted() {
@@ -2459,40 +2479,42 @@ var app = new Vue({
     this.handleResize();
   },
   methods: {
-    updateTime: function updateTime(selected_time) {
-      this.selected_time = selected_time;
-    },
     updateTodo: function updateTodo(selected_todo) {
       this.selected_todo = selected_todo;
+      this.selected_holiday = "";
+    },
+    updateHoliday: function updateHoliday(selected_holiday) {
+      this.selected_holiday = selected_holiday;
+      this.selected_todo = 0;
     },
     handleResize: function handleResize() {
-      if (window.innerWidth <= 800) {
-        //画面幅800px以下でモーダルモード
+      if (window.innerWidth <= 770) {
+        //画面幅770px以下でモーダルモード
         this.on_modal_mode = true;
-        this.show_room_content = false;
+        this.show_holiday = false;
         this.show_todo = false;
       } else {
         this.on_modal_mode = false;
-        this.show_room_content = true;
+        this.show_holiday = true;
         this.show_todo = true;
       }
     },
-    openModalTodo: function openModalTodo() {
+    openTodo: function openTodo() {
       this.show_todo = true;
     },
-    openModalHoliday: function openModalHoliday() {
-      this.show_room_content = true;
+    openHoliday: function openHoliday() {
+      this.show_holiday = true;
     },
-    closeModalTodo: function closeModalTodo() {
+    closeTodo: function closeTodo() {
       if (this.on_modal_mode) {
         //モーダル画面表示ではない場合は、画面を閉じない。
         this.show_todo = false;
       }
     },
-    closeModal: function closeModal() {
+    closeHoliday: function closeHoliday() {
       if (this.on_modal_mode) {
         //モーダル画面表示ではない場合は、画面を閉じない。
-        this.show_room_content = false;
+        this.show_holiday = false;
       }
     }
   }
@@ -6927,7 +6949,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.time-section[data-v-07289d52] {\n    font-size: 1.3rem;\n}\n.time-box[data-v-07289d52] {\n    padding: 0.5em 1em;\n    margin: 2em 0;\n    color: #5989cf;\n    background: #c6e4ff;\n    border-bottom: solid 6px #fffff0;\n    border-radius: 9px;\n}\n.time-box p[data-v-07289d52] {\n    margin: 0; \n    padding: 0;\n}\n.holiday-box[data-v-07289d52] {\n    overflow-y: scroll;\n    height: 500px;\n    cursor: pointer;\n}\n.holiday[data-v-07289d52] {\n    width: 100%;\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.time-section[data-v-07289d52] {\n    font-size: 1.3rem;\n}\n.time-box[data-v-07289d52] {\n    padding: 0.5em 1em;\n    margin: 2em 0;\n    color: #5989cf;\n    background: #c6e4ff;\n    border-bottom: solid 6px #fffff0;\n    border-radius: 9px;\n}\n.time-box p[data-v-07289d52] {\n    margin: 0; \n    padding: 0;\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -6951,7 +6973,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.time-box[data-v-0b333f70] {\n    font-size: 1.5rem;\n}\n.holiday-box[data-v-0b333f70] {\n    overflow-y: scroll;\n    height: 500px;\n    cursor: pointer;\n}\n.holiday[data-v-0b333f70] {\n    width: 100%;\n}\n.holiday-passed[data-v-0b333f70] {\n    width: 100%;\n    opacity: .4;\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.holiday-box[data-v-0b333f70] {\n    overflow-y: scroll;\n    height: 500px;\n    cursor: pointer;\n}\n.holiday-btn[data-v-0b333f70] {\n    width: 100%;\n}\n.holiday-btn-passed[data-v-0b333f70] {\n    width: 100%;\n    opacity: .4;\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -38423,45 +38445,6 @@ component.options.__file = "resources/js/components/CountDownComponent.vue"
 
 /***/ }),
 
-/***/ "./resources/js/components/ExampleComponent.vue":
-/*!******************************************************!*\
-  !*** ./resources/js/components/ExampleComponent.vue ***!
-  \******************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _ExampleComponent_vue_vue_type_template_id_299e239e___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ExampleComponent.vue?vue&type=template&id=299e239e& */ "./resources/js/components/ExampleComponent.vue?vue&type=template&id=299e239e&");
-/* harmony import */ var _ExampleComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ExampleComponent.vue?vue&type=script&lang=js& */ "./resources/js/components/ExampleComponent.vue?vue&type=script&lang=js&");
-/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! !../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
-
-
-
-
-
-/* normalize component */
-;
-var component = (0,_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
-  _ExampleComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
-  _ExampleComponent_vue_vue_type_template_id_299e239e___WEBPACK_IMPORTED_MODULE_0__.render,
-  _ExampleComponent_vue_vue_type_template_id_299e239e___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns,
-  false,
-  null,
-  null,
-  null
-  
-)
-
-/* hot reload */
-if (false) { var api; }
-component.options.__file = "resources/js/components/ExampleComponent.vue"
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (component.exports);
-
-/***/ }),
-
 /***/ "./resources/js/components/HolidayComponent.vue":
 /*!******************************************************!*\
   !*** ./resources/js/components/HolidayComponent.vue ***!
@@ -38560,22 +38543,6 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./resources/js/components/ExampleComponent.vue?vue&type=script&lang=js&":
-/*!*******************************************************************************!*\
-  !*** ./resources/js/components/ExampleComponent.vue?vue&type=script&lang=js& ***!
-  \*******************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_0_rules_0_use_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ExampleComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./ExampleComponent.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/ExampleComponent.vue?vue&type=script&lang=js&");
- /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_babel_loader_lib_index_js_clonedRuleSet_5_0_rules_0_use_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ExampleComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
-
-/***/ }),
-
 /***/ "./resources/js/components/HolidayComponent.vue?vue&type=script&lang=js&":
 /*!*******************************************************************************!*\
   !*** ./resources/js/components/HolidayComponent.vue?vue&type=script&lang=js& ***!
@@ -38664,23 +38631,6 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./resources/js/components/ExampleComponent.vue?vue&type=template&id=299e239e&":
-/*!*************************************************************************************!*\
-  !*** ./resources/js/components/ExampleComponent.vue?vue&type=template&id=299e239e& ***!
-  \*************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "render": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ExampleComponent_vue_vue_type_template_id_299e239e___WEBPACK_IMPORTED_MODULE_0__.render),
-/* harmony export */   "staticRenderFns": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ExampleComponent_vue_vue_type_template_id_299e239e___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns)
-/* harmony export */ });
-/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ExampleComponent_vue_vue_type_template_id_299e239e___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./ExampleComponent.vue?vue&type=template&id=299e239e& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/ExampleComponent.vue?vue&type=template&id=299e239e&");
-
-
-/***/ }),
-
 /***/ "./resources/js/components/HolidayComponent.vue?vue&type=template&id=0b333f70&scoped=true&":
 /*!*************************************************************************************************!*\
   !*** ./resources/js/components/HolidayComponent.vue?vue&type=template&id=0b333f70&scoped=true& ***!
@@ -38736,7 +38686,7 @@ var render = function () {
     _vm._v(" "),
     _c("div", { staticClass: "time-section text-center p-4" }, [
       _c("div", { staticClass: "p-2" }, [
-        _c("p", [_vm._v(_vm._s(_vm.selected_name) + "まで")]),
+        _c("p", [_vm._v(_vm._s(_vm.target_event) + "まで")]),
         _vm._v(" "),
         _c("p", [_vm._v("あと")]),
       ]),
@@ -38778,54 +38728,6 @@ render._withStripped = true
 
 /***/ }),
 
-/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/ExampleComponent.vue?vue&type=template&id=299e239e&":
-/*!****************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/ExampleComponent.vue?vue&type=template&id=299e239e& ***!
-  \****************************************************************************************************************************************************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "render": () => (/* binding */ render),
-/* harmony export */   "staticRenderFns": () => (/* binding */ staticRenderFns)
-/* harmony export */ });
-var render = function () {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _vm._m(0)
-}
-var staticRenderFns = [
-  function () {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "container" }, [
-      _c("div", { staticClass: "row justify-content-center" }, [
-        _c("div", { staticClass: "col-md-8" }, [
-          _c("div", { staticClass: "card" }, [
-            _c("div", { staticClass: "card-header" }, [
-              _vm._v("Example Component"),
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "card-body" }, [
-              _vm._v(
-                "\n                    I'm an example component.\n                "
-              ),
-            ]),
-          ]),
-        ]),
-      ]),
-    ])
-  },
-]
-render._withStripped = true
-
-
-
-/***/ }),
-
 /***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/HolidayComponent.vue?vue&type=template&id=0b333f70&scoped=true&":
 /*!****************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/HolidayComponent.vue?vue&type=template&id=0b333f70&scoped=true& ***!
@@ -38850,12 +38752,12 @@ var render = function () {
       { staticClass: "holiday-box" },
       _vm._l(_vm.holidays, function (holiday, index) {
         return _c("div", { key: index, staticClass: "border" }, [
-          _vm.getNow(index)
+          _vm.compareDate(index)
             ? _c("div", [
                 _c(
                   "button",
                   {
-                    staticClass: "btn holiday p-3",
+                    staticClass: "btn holiday-btn p-3",
                     on: {
                       click: function ($event) {
                         return _vm.update(index)
@@ -38877,7 +38779,7 @@ var render = function () {
                 _c(
                   "button",
                   {
-                    staticClass: "btn holiday-passed p-3",
+                    staticClass: "btn holiday-btn-passed p-3",
                     on: {
                       click: function ($event) {
                         return _vm.update(index)
@@ -39062,8 +38964,8 @@ var render = function () {
               {
                 name: "model",
                 rawName: "v-model",
-                value: _vm.name,
-                expression: "name",
+                value: _vm.event_name,
+                expression: "event_name",
               },
             ],
             staticClass: "form-control rounded",
@@ -39073,16 +38975,26 @@ var render = function () {
               maxlength: "10",
               placeholder: "イベント名",
             },
-            domProps: { value: _vm.name },
+            domProps: { value: _vm.event_name },
             on: {
               input: function ($event) {
                 if ($event.target.composing) {
                   return
                 }
-                _vm.name = $event.target.value
+                _vm.event_name = $event.target.value
               },
             },
           }),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              staticClass: "btn btn-outline-primary",
+              attrs: { type: "submit" },
+              on: { click: _vm.registerTodo },
+            },
+            [_vm._v("登録")]
+          ),
         ]),
         _vm._v(" "),
         _c("small", { staticClass: "px-2 form-text text-muted" }, [

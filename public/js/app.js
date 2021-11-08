@@ -2081,71 +2081,123 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  props: {
+    selected_todo: {
+      type: Number,
+      "default": 0
+    },
+    selected_holiday: {
+      type: String,
+      "default": ""
+    }
+  },
   data: function data() {
     return {
-      holidays: [],
-      selected_time: "2021-11-07"
+      target_time: "",
+      target_event: "明日",
+      holiday: [],
+      todo: [],
+      countdown_timer: 0 //カウントダウンストップ用
+
     };
   },
+  watch: {
+    //Todoのクリックを検知
+    selected_todo: function selected_todo(_selected_todo) {
+      if (_selected_todo != 0) {
+        clearTimeout(this.countdown_timer);
+        this.getTodo();
+        this.countdown();
+      }
+    },
+    //祝日のクリックを検知
+    selected_holiday: function selected_holiday(_selected_holiday) {
+      if (_selected_holiday != "") {
+        clearTimeout(this.countdown_timer);
+        this.getHoliday();
+        this.countdown();
+      }
+    }
+  },
   mounted: function mounted() {
-    //createdにすると動かない
-    this.getHoliday();
-    window.setTimeout(this.countdown, 1000); // this.countdown();
+    this.getTomorrow(); //初期表示（明日）
   },
   methods: {
-    update: function update(index) {
-      this.selected_time = index;
-    },
+    //カウントダウン
     countdown: function countdown() {
-      var now = new Date(); //今の時間    
+      var now = new Date();
+      var time = Date.parse(this.target_time); //文字列型からdatetime型へ変換
 
-      var time = Date.parse(this.selected_time);
       var date = new Date(time);
-      var differ = date.getTime() - now.getTime(); //あと何秒か計算
+      var differ = date.getTime() - now.getTime(); //日、時、分、秒の値を計算
 
       var day = Math.floor(differ / 1000 / 60 / 60 / 24);
       var hour = Math.floor(differ / 1000 / 60 / 60) % 24;
-      var min = Math.floor(differ / 1000 / 60) % 60; //1時間=60分だからね
+      var min = Math.floor(differ / 1000 / 60) % 60;
+      var sec = Math.floor(differ / 1000) % 60;
 
-      var sec = Math.floor(differ / 1000) % 60; //ミリ秒を秒に直してから
+      if (day < 0) {
+        day = day + 1; //マイナスの場合一日ずれるので+1
+      } //一桁になった時に0を付与
 
-      document.getElementById("day").textContent = String(day).padStart(2, "0"); //一桁になった時0がつくように
 
-      document.getElementById("hour").textContent = String(hour).padStart(2, "0"); //一桁になった時0がつくように
-
+      document.getElementById("day").textContent = String(day).padStart(2, "0");
+      document.getElementById("hour").textContent = String(hour).padStart(2, "0");
       document.getElementById("min").textContent = String(min).padStart(2, "0");
       document.getElementById("sec").textContent = String(sec).padStart(2, "0");
-      window.setTimeout(this.countdown, 1000); //1秒毎に繰り返す
+      this.countdown_timer = window.setTimeout(this.countdown, 1000);
     },
-    getHoliday: function getHoliday() {
+    //明日の日付を取得
+    getTomorrow: function getTomorrow() {
+      var date = new Date();
+      date.setDate(date.getDate() + 1); //dateを明日にセット
+      //datetime型を文字列へ変換
+
+      var year = date.getFullYear();
+      var month = date.getMonth() + 1;
+      var day = date.getDate();
+      this.target_time = String(year) + "-" + String(month) + "-" + String(day);
+      this.countdown();
+    },
+    //Todo一覧を取得
+    getTodo: function getTodo() {
       var self = this;
-      axios.get('get-holidays').then(function (response) {
-        self.holidays = response.data;
-        console.log(self.holidays);
+      axios.get('vue/get-todo', {
+        params: {
+          id: this.selected_todo
+        }
+      }).then(function (response) {
+        self.todo = response.data;
+        self.target_time = response.data[0].date;
+        self.target_event = response.data[0].name;
       })["catch"](function (error) {
         alert(error);
       });
     },
-    formatDate: function formatDate(date) {
-      date = date * 1000;
-      date = date.getTime();
-      console.log(date);
-      return date;
+    //祝日一覧を取得
+    getHoliday: function getHoliday() {
+      var self = this;
+      axios.get('vue/get-holiday', {
+        params: {
+          date: this.selected_holiday
+        }
+      }).then(function (response) {
+        self.holiday = response.data;
+        self.target_time = self.selected_holiday;
+        self.target_event = self.holiday.name;
+      })["catch"](function (error) {
+        alert(error);
+      });
     }
   }
 });
 
 /***/ }),
 
-/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/ExampleComponent.vue?vue&type=script&lang=js&":
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/HolidayComponent.vue?vue&type=script&lang=js&":
 /*!***********************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/ExampleComponent.vue?vue&type=script&lang=js& ***!
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/HolidayComponent.vue?vue&type=script&lang=js& ***!
   \***********************************************************************************************************************************************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
@@ -2170,9 +2222,60 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  data: function data() {
+    return {
+      holidays: []
+    };
+  },
   mounted: function mounted() {
-    console.log('Component mounted.');
+    this.getHolidays();
+  },
+  methods: {
+    //選択した祝日を親コンポーネントへ送信
+    update: function update(selected_holiday) {
+      this.$emit('holiday-click', selected_holiday);
+      this.closeModal();
+    },
+    //モーダルウィンドウをクローズ
+    closeModal: function closeModal() {
+      this.$emit('todo-click-c');
+    },
+    //祝日リストを取得
+    getHolidays: function getHolidays() {
+      var self = this;
+      axios.get('vue/get-holidays').then(function (response) {
+        self.holidays = response.data;
+      })["catch"](function (error) {
+        alert(error);
+      });
+    },
+    //今日の日付とイベントの日付を比較
+    compareDate: function compareDate(index) {
+      var time = Date.parse(index);
+      var now = new Date();
+
+      if (now <= time) {
+        return true;
+      } else {
+        return false;
+      }
+    }
   }
 });
 
@@ -2208,51 +2311,116 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
       todos: [],
-      selected_time: "2021-11-07",
+      selected_todo: 0,
       date: "",
-      name: ""
+      event_name: null
     };
   },
   mounted: function mounted() {
-    //createdにすると動かない
     this.getTodos();
   },
   methods: {
-    update: function update(index) {
-      this.selected_time = index;
+    //選択したTodoを親コンポーネントへ送信
+    update: function update(selected_todo) {
+      this.$emit('todo-click', selected_todo);
+      this.closeModal();
     },
+    //モーダルウィンドウをクローズ
+    closeModal: function closeModal() {
+      this.$emit('todo-click-c');
+    },
+    //Todoリストを削除
     deleteTodo: function deleteTodo(todo_id) {
-      alert(todo_id);
+      var self = this;
       axios["delete"]('vue/delete-todo', {
         data: {
           id: todo_id
         }
-      }).then(function (response) {})["catch"](function (error) {
+      }).then(function (response) {
+        self.getTodos();
+      })["catch"](function (error) {
         alert(error);
       });
     },
+    //Todoリストを取得
     getTodos: function getTodos() {
       var self = this;
-      axios.get('get-todos').then(function (response) {
+      axios.get('vue/get-todos').then(function (response) {
         self.todos = response.data;
       })["catch"](function (error) {
         alert(error);
       });
     },
+    //Todoを登録
     registerTodo: function registerTodo() {
-      var self = this;
-      axios.post('vue/register-todo', {
-        date: this.date,
-        name: this.name
-      }).then(function (response) {
-        self.date = "", self.name = ""; // self.todos = response.data;
-      })["catch"](function (error) {
-        alert(error);
-      });
+      //Null処理
+      if (this.event_name) {
+        var self = this;
+        axios.post('vue/register-todo', {
+          date: this.date,
+          name: this.event_name
+        }).then(function (response) {
+          self.date = "", self.event_name = "";
+          self.getTodos(); //Todoリスト更新
+        })["catch"](function (error) {
+          alert(error);
+        });
+      } else {
+        alert("イベント名を入力してください。");
+      }
+    },
+    //日付の表示形式を指定
+    formatDate: function formatDate(todo_date) {
+      //文字列をdatetime型へ変換
+      var time = Date.parse(todo_date);
+      var date = new Date(time); //年月日を取得し、フォーマットを作成
+
+      var year = date.getFullYear();
+      var month = ("0" + (date.getMonth() + 1)).slice(-2);
+      var day = ("0" + date.getDate()).slice(-2);
+      var formatted_date = year + "-" + month + "-" + day;
+      return formatted_date;
+    },
+    //今日の日付とイベントの日付を比較
+    compareDate: function compareDate(todo_date) {
+      var time = Date.parse(todo_date); //文字列をdatetime型へ変換
+
+      var now = new Date(); //今日の日付を取得
+
+      if (now <= time) {
+        return true;
+      } else {
+        return false;
+      }
     }
   }
 });
@@ -2283,8 +2451,8 @@ window.Vue = (__webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm.js
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
-Vue.component('example-component', (__webpack_require__(/*! ./components/ExampleComponent.vue */ "./resources/js/components/ExampleComponent.vue")["default"]));
 Vue.component('countdown-component', (__webpack_require__(/*! ./components/CountDownComponent.vue */ "./resources/js/components/CountDownComponent.vue")["default"]));
+Vue.component('holiday-component', (__webpack_require__(/*! ./components/HolidayComponent.vue */ "./resources/js/components/HolidayComponent.vue")["default"]));
 Vue.component('todo-component', (__webpack_require__(/*! ./components/TodoComponent.vue */ "./resources/js/components/TodoComponent.vue")["default"]));
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -2297,8 +2465,58 @@ var app = new Vue({
   data: function data() {
     return {
       on_arrow: true,
-      selected_time: ""
+      //サイドバー用
+      selected_holiday: "",
+      selected_todo: 0,
+      show_todo: true,
+      show_holiday: true,
+      on_modal_mode: false
     };
+  },
+  mounted: function mounted() {
+    window.addEventListener('resize', this.handleResize); //リサイズ検知
+
+    this.handleResize();
+  },
+  methods: {
+    updateTodo: function updateTodo(selected_todo) {
+      this.selected_todo = selected_todo;
+      this.selected_holiday = "";
+    },
+    updateHoliday: function updateHoliday(selected_holiday) {
+      this.selected_holiday = selected_holiday;
+      this.selected_todo = 0;
+    },
+    handleResize: function handleResize() {
+      if (window.innerWidth <= 770) {
+        //画面幅770px以下でモーダルモード
+        this.on_modal_mode = true;
+        this.show_holiday = false;
+        this.show_todo = false;
+      } else {
+        this.on_modal_mode = false;
+        this.show_holiday = true;
+        this.show_todo = true;
+      }
+    },
+    openTodo: function openTodo() {
+      this.show_todo = true;
+    },
+    openHoliday: function openHoliday() {
+      this.show_holiday = true;
+    },
+    closeTodo: function closeTodo() {
+      if (this.on_modal_mode) {
+        //モーダル画面表示ではない場合は、画面を閉じない。
+        this.show_todo = false;
+      }
+    },
+    closeHoliday: function closeHoliday() {
+      if (this.on_modal_mode) {
+        //モーダル画面表示ではない場合は、画面を閉じない。
+        this.show_holiday = false;
+      }
+    }
   }
 });
 
@@ -6731,7 +6949,31 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.time-box[data-v-07289d52] {\n    font-size: 1.5rem;\n}\n.holiday-box[data-v-07289d52] {\n    overflow-y: scroll;\n    height: 500px;\n    cursor: pointer;\n}\n.holiday[data-v-07289d52] {\n    width: 100%;\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.time-section[data-v-07289d52] {\n    font-size: 1.3rem;\n}\n.time-box[data-v-07289d52] {\n    padding: 0.5em 1em;\n    margin: 2em 0;\n    color: #5989cf;\n    background: #c6e4ff;\n    border-bottom: solid 6px #fffff0;\n    border-radius: 9px;\n}\n.time-box p[data-v-07289d52] {\n    margin: 0; \n    padding: 0;\n}\n", ""]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/HolidayComponent.vue?vue&type=style&index=0&id=0b333f70&scoped=true&lang=css&":
+/*!*********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/HolidayComponent.vue?vue&type=style&index=0&id=0b333f70&scoped=true&lang=css& ***!
+  \*********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__);
+// Imports
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, "\n.holiday-box[data-v-0b333f70] {\n    overflow-y: scroll;\n    height: 500px;\n    cursor: pointer;\n}\n.holiday-btn[data-v-0b333f70] {\n    width: 100%;\n}\n.holiday-btn-passed[data-v-0b333f70] {\n    width: 100%;\n    opacity: .4;\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -6755,7 +6997,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.time-box[data-v-2bd14908] {\n    font-size: 1.5rem;\n}\n.todo-box[data-v-2bd14908] {\n    overflow-y: scroll;\n    height: 500px;\n    cursor: pointer;\n}\n.holiday[data-v-2bd14908] {\n    width: 100%;\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.todo-section[data-v-2bd14908] {\n    overflow-y: scroll;\n    height: 400px;\n}\n.todo-box[data-v-2bd14908] {\n    display: flex;\n    flex-wrap: nowrap;\n}\n.todo-btn[data-v-2bd14908] {\n    flex-grow: 1;\n    border-radius: 9px;\n}\n.todo-btn-passed[data-v-2bd14908] {\n    flex-grow: 1;\n    border-radius: 9px;\n    opacity: .4;\n}\n.delete-btn-passed[data-v-2bd14908] {\n    opacity: .4;\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -37823,6 +38065,36 @@ var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js
 
 /***/ }),
 
+/***/ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/HolidayComponent.vue?vue&type=style&index=0&id=0b333f70&scoped=true&lang=css&":
+/*!*************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/HolidayComponent.vue?vue&type=style&index=0&id=0b333f70&scoped=true&lang=css& ***!
+  \*************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_clonedRuleSet_10_0_rules_0_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_10_0_rules_0_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_HolidayComponent_vue_vue_type_style_index_0_id_0b333f70_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !!../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./HolidayComponent.vue?vue&type=style&index=0&id=0b333f70&scoped=true&lang=css& */ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/HolidayComponent.vue?vue&type=style&index=0&id=0b333f70&scoped=true&lang=css&");
+
+            
+
+var options = {};
+
+options.insert = "head";
+options.singleton = false;
+
+var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_clonedRuleSet_10_0_rules_0_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_10_0_rules_0_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_HolidayComponent_vue_vue_type_style_index_0_id_0b333f70_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_1__["default"], options);
+
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_clonedRuleSet_10_0_rules_0_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_10_0_rules_0_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_HolidayComponent_vue_vue_type_style_index_0_id_0b333f70_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_1__["default"].locals || {});
+
+/***/ }),
+
 /***/ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/TodoComponent.vue?vue&type=style&index=0&id=2bd14908&scoped=true&lang=css&":
 /*!**********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/TodoComponent.vue?vue&type=style&index=0&id=2bd14908&scoped=true&lang=css& ***!
@@ -38173,9 +38445,9 @@ component.options.__file = "resources/js/components/CountDownComponent.vue"
 
 /***/ }),
 
-/***/ "./resources/js/components/ExampleComponent.vue":
+/***/ "./resources/js/components/HolidayComponent.vue":
 /*!******************************************************!*\
-  !*** ./resources/js/components/ExampleComponent.vue ***!
+  !*** ./resources/js/components/HolidayComponent.vue ***!
   \******************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
@@ -38184,30 +38456,32 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _ExampleComponent_vue_vue_type_template_id_299e239e___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ExampleComponent.vue?vue&type=template&id=299e239e& */ "./resources/js/components/ExampleComponent.vue?vue&type=template&id=299e239e&");
-/* harmony import */ var _ExampleComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ExampleComponent.vue?vue&type=script&lang=js& */ "./resources/js/components/ExampleComponent.vue?vue&type=script&lang=js&");
-/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! !../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+/* harmony import */ var _HolidayComponent_vue_vue_type_template_id_0b333f70_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./HolidayComponent.vue?vue&type=template&id=0b333f70&scoped=true& */ "./resources/js/components/HolidayComponent.vue?vue&type=template&id=0b333f70&scoped=true&");
+/* harmony import */ var _HolidayComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./HolidayComponent.vue?vue&type=script&lang=js& */ "./resources/js/components/HolidayComponent.vue?vue&type=script&lang=js&");
+/* harmony import */ var _HolidayComponent_vue_vue_type_style_index_0_id_0b333f70_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./HolidayComponent.vue?vue&type=style&index=0&id=0b333f70&scoped=true&lang=css& */ "./resources/js/components/HolidayComponent.vue?vue&type=style&index=0&id=0b333f70&scoped=true&lang=css&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! !../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
 
+;
 
 
 /* normalize component */
-;
-var component = (0,_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
-  _ExampleComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
-  _ExampleComponent_vue_vue_type_template_id_299e239e___WEBPACK_IMPORTED_MODULE_0__.render,
-  _ExampleComponent_vue_vue_type_template_id_299e239e___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns,
+
+var component = (0,_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
+  _HolidayComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _HolidayComponent_vue_vue_type_template_id_0b333f70_scoped_true___WEBPACK_IMPORTED_MODULE_0__.render,
+  _HolidayComponent_vue_vue_type_template_id_0b333f70_scoped_true___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns,
   false,
   null,
-  null,
+  "0b333f70",
   null
   
 )
 
 /* hot reload */
 if (false) { var api; }
-component.options.__file = "resources/js/components/ExampleComponent.vue"
+component.options.__file = "resources/js/components/HolidayComponent.vue"
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (component.exports);
 
 /***/ }),
@@ -38269,9 +38543,9 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./resources/js/components/ExampleComponent.vue?vue&type=script&lang=js&":
+/***/ "./resources/js/components/HolidayComponent.vue?vue&type=script&lang=js&":
 /*!*******************************************************************************!*\
-  !*** ./resources/js/components/ExampleComponent.vue?vue&type=script&lang=js& ***!
+  !*** ./resources/js/components/HolidayComponent.vue?vue&type=script&lang=js& ***!
   \*******************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
@@ -38280,8 +38554,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_0_rules_0_use_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ExampleComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./ExampleComponent.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/ExampleComponent.vue?vue&type=script&lang=js&");
- /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_babel_loader_lib_index_js_clonedRuleSet_5_0_rules_0_use_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ExampleComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_0_rules_0_use_0_node_modules_vue_loader_lib_index_js_vue_loader_options_HolidayComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./HolidayComponent.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/HolidayComponent.vue?vue&type=script&lang=js&");
+ /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_babel_loader_lib_index_js_clonedRuleSet_5_0_rules_0_use_0_node_modules_vue_loader_lib_index_js_vue_loader_options_HolidayComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
 
 /***/ }),
 
@@ -38310,6 +38584,19 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _node_modules_style_loader_dist_cjs_js_node_modules_css_loader_dist_cjs_js_clonedRuleSet_10_0_rules_0_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_10_0_rules_0_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_CountDownComponent_vue_vue_type_style_index_0_id_07289d52_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader/dist/cjs.js!../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./CountDownComponent.vue?vue&type=style&index=0&id=07289d52&scoped=true&lang=css& */ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/CountDownComponent.vue?vue&type=style&index=0&id=07289d52&scoped=true&lang=css&");
+
+
+/***/ }),
+
+/***/ "./resources/js/components/HolidayComponent.vue?vue&type=style&index=0&id=0b333f70&scoped=true&lang=css&":
+/*!***************************************************************************************************************!*\
+  !*** ./resources/js/components/HolidayComponent.vue?vue&type=style&index=0&id=0b333f70&scoped=true&lang=css& ***!
+  \***************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_style_loader_dist_cjs_js_node_modules_css_loader_dist_cjs_js_clonedRuleSet_10_0_rules_0_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_10_0_rules_0_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_HolidayComponent_vue_vue_type_style_index_0_id_0b333f70_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader/dist/cjs.js!../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./HolidayComponent.vue?vue&type=style&index=0&id=0b333f70&scoped=true&lang=css& */ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-10[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/HolidayComponent.vue?vue&type=style&index=0&id=0b333f70&scoped=true&lang=css&");
 
 
 /***/ }),
@@ -38344,19 +38631,19 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./resources/js/components/ExampleComponent.vue?vue&type=template&id=299e239e&":
-/*!*************************************************************************************!*\
-  !*** ./resources/js/components/ExampleComponent.vue?vue&type=template&id=299e239e& ***!
-  \*************************************************************************************/
+/***/ "./resources/js/components/HolidayComponent.vue?vue&type=template&id=0b333f70&scoped=true&":
+/*!*************************************************************************************************!*\
+  !*** ./resources/js/components/HolidayComponent.vue?vue&type=template&id=0b333f70&scoped=true& ***!
+  \*************************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "render": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ExampleComponent_vue_vue_type_template_id_299e239e___WEBPACK_IMPORTED_MODULE_0__.render),
-/* harmony export */   "staticRenderFns": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ExampleComponent_vue_vue_type_template_id_299e239e___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns)
+/* harmony export */   "render": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_HolidayComponent_vue_vue_type_template_id_0b333f70_scoped_true___WEBPACK_IMPORTED_MODULE_0__.render),
+/* harmony export */   "staticRenderFns": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_HolidayComponent_vue_vue_type_template_id_0b333f70_scoped_true___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns)
 /* harmony export */ });
-/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ExampleComponent_vue_vue_type_template_id_299e239e___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./ExampleComponent.vue?vue&type=template&id=299e239e& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/ExampleComponent.vue?vue&type=template&id=299e239e&");
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_HolidayComponent_vue_vue_type_template_id_0b333f70_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./HolidayComponent.vue?vue&type=template&id=0b333f70&scoped=true& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/HolidayComponent.vue?vue&type=template&id=0b333f70&scoped=true&");
 
 
 /***/ }),
@@ -38394,38 +38681,18 @@ var render = function () {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "row" }, [
-    _c("div", { staticClass: "col-md-8" }, [
-      _c("div", { staticClass: "time-box text-center p-4" }, [
-        _c("p", { staticClass: "until" }, [
-          _vm._v(_vm._s(_vm.holidays[_vm.selected_time]) + "まで"),
-        ]),
-        _vm._v(" "),
-        _vm._m(0),
-      ]),
-    ]),
+  return _c("div", { staticClass: "p-4" }, [
+    _vm._m(0),
     _vm._v(" "),
-    _c(
-      "div",
-      { staticClass: "col-md-4 holiday-box" },
-      _vm._l(_vm.holidays, function (holiday, index) {
-        return _c("div", { key: index, staticClass: "border" }, [
-          _c(
-            "button",
-            {
-              staticClass: "btn holiday p-4",
-              on: {
-                click: function ($event) {
-                  return _vm.update(index)
-                },
-              },
-            },
-            [_vm._v(_vm._s(index) + " " + _vm._s(holiday))]
-          ),
-        ])
-      }),
-      0
-    ),
+    _c("div", { staticClass: "time-section text-center p-4" }, [
+      _c("div", { staticClass: "p-2" }, [
+        _c("p", [_vm._v(_vm._s(_vm.target_event) + "まで")]),
+        _vm._v(" "),
+        _c("p", [_vm._v("あと")]),
+      ]),
+      _vm._v(" "),
+      _vm._m(1),
+    ]),
   ])
 }
 var staticRenderFns = [
@@ -38433,16 +38700,25 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("p", { staticClass: "timer" }, [
-      _vm._v("あと\n            "),
-      _c("span", { attrs: { id: "day" } }),
-      _vm._v("日と\n            "),
-      _c("span", { attrs: { id: "hour" } }),
-      _vm._v("時間\n            "),
-      _c("span", { attrs: { id: "min" } }),
-      _vm._v("分\n            "),
-      _c("span", { attrs: { id: "sec" } }),
-      _vm._v("秒\n            "),
+    return _c("div", { staticClass: "text-center" }, [
+      _c("h3", [_vm._v("カウントダウン")]),
+    ])
+  },
+  function () {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "time-box p-4" }, [
+      _c("p", [_c("span", { attrs: { id: "day" } }), _vm._v("日と")]),
+      _vm._v(" "),
+      _c("p", [
+        _c("span", { attrs: { id: "hour" } }),
+        _vm._v("時間"),
+        _c("span", { attrs: { id: "min" } }),
+        _vm._v("分"),
+        _c("span", { attrs: { id: "sec" } }),
+        _vm._v("秒"),
+      ]),
     ])
   },
 ]
@@ -38452,10 +38728,10 @@ render._withStripped = true
 
 /***/ }),
 
-/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/ExampleComponent.vue?vue&type=template&id=299e239e&":
-/*!****************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/ExampleComponent.vue?vue&type=template&id=299e239e& ***!
-  \****************************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/HolidayComponent.vue?vue&type=template&id=0b333f70&scoped=true&":
+/*!****************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/HolidayComponent.vue?vue&type=template&id=0b333f70&scoped=true& ***!
+  \****************************************************************************************************************************************************************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -38468,29 +38744,72 @@ var render = function () {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
+  return _c("div", { staticClass: "p-4" }, [
+    _vm._m(0),
+    _vm._v(" "),
+    _c(
+      "div",
+      { staticClass: "holiday-box" },
+      _vm._l(_vm.holidays, function (holiday, index) {
+        return _c("div", { key: index, staticClass: "border" }, [
+          _vm.compareDate(index)
+            ? _c("div", [
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn holiday-btn p-3",
+                    on: {
+                      click: function ($event) {
+                        return _vm.update(index)
+                      },
+                    },
+                  },
+                  [
+                    _vm._v("\n                    " + _vm._s(index)),
+                    _c("br"),
+                    _vm._v(
+                      "\n                    " +
+                        _vm._s(holiday) +
+                        "\n                "
+                    ),
+                  ]
+                ),
+              ])
+            : _c("div", [
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn holiday-btn-passed p-3",
+                    on: {
+                      click: function ($event) {
+                        return _vm.update(index)
+                      },
+                    },
+                  },
+                  [
+                    _vm._v("\n                    " + _vm._s(index)),
+                    _c("br"),
+                    _vm._v(
+                      "\n                    " +
+                        _vm._s(holiday) +
+                        "\n                "
+                    ),
+                  ]
+                ),
+              ]),
+        ])
+      }),
+      0
+    ),
+  ])
 }
 var staticRenderFns = [
   function () {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "container" }, [
-      _c("div", { staticClass: "row justify-content-center" }, [
-        _c("div", { staticClass: "col-md-8" }, [
-          _c("div", { staticClass: "card" }, [
-            _c("div", { staticClass: "card-header" }, [
-              _vm._v("Example Component"),
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "card-body" }, [
-              _vm._v(
-                "\n                    I'm an example component.\n                "
-              ),
-            ]),
-          ]),
-        ]),
-      ]),
+    return _c("div", { staticClass: "text-center" }, [
+      _c("h3", [_vm._v("祝日")]),
     ])
   },
 ]
@@ -38516,35 +38835,91 @@ var render = function () {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", [
+  return _c("div", { staticClass: "p-4" }, [
+    _vm._m(0),
+    _vm._v(" "),
     _c(
       "div",
-      { staticClass: "todo-box" },
+      { staticClass: "todo-section" },
       _vm._l(_vm.todos, function (todo, index) {
         return _c("div", { key: index, staticClass: "border" }, [
-          _c(
-            "button",
-            {
-              on: {
-                click: function ($event) {
-                  return _vm.update(index)
-                },
-              },
-            },
-            [_vm._v(_vm._s(todo.date) + " " + _vm._s(todo.name))]
-          ),
-          _vm._v(" "),
-          _c(
-            "button",
-            {
-              on: {
-                click: function ($event) {
-                  return _vm.deleteTodo(todo.id)
-                },
-              },
-            },
-            [_vm._v("削除")]
-          ),
+          _vm.compareDate(todo.date)
+            ? _c("div", { staticClass: "todo-box" }, [
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn todo-btn py-3",
+                    on: {
+                      click: function ($event) {
+                        return _vm.update(todo.id)
+                      },
+                    },
+                  },
+                  [
+                    _vm._v(
+                      "\n                    " +
+                        _vm._s(_vm.formatDate(todo.date))
+                    ),
+                    _c("br"),
+                    _vm._v(
+                      "\n                    " +
+                        _vm._s(todo.name) +
+                        "\n                "
+                    ),
+                  ]
+                ),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn delete-btn btn-outline-primary",
+                    on: {
+                      click: function ($event) {
+                        return _vm.deleteTodo(todo.id)
+                      },
+                    },
+                  },
+                  [_vm._v("削除")]
+                ),
+              ])
+            : _c("div", { staticClass: "todo-box" }, [
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn todo-btn-passed py-3",
+                    on: {
+                      click: function ($event) {
+                        return _vm.update(todo.id)
+                      },
+                    },
+                  },
+                  [
+                    _vm._v(
+                      "\n                    " +
+                        _vm._s(_vm.formatDate(todo.date))
+                    ),
+                    _c("br"),
+                    _vm._v(
+                      "\n                    " +
+                        _vm._s(todo.name) +
+                        "\n                "
+                    ),
+                  ]
+                ),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn delete-btn-passed btn-outline-primary",
+                    on: {
+                      click: function ($event) {
+                        return _vm.deleteTodo(todo.id)
+                      },
+                    },
+                  },
+                  [_vm._v("削除")]
+                ),
+              ]),
         ])
       }),
       0
@@ -38553,6 +38928,7 @@ var render = function () {
     _c(
       "form",
       {
+        staticClass: "py-4",
         on: {
           submit: function ($event) {
             $event.preventDefault()
@@ -38569,6 +38945,7 @@ var render = function () {
               expression: "date",
             },
           ],
+          staticClass: "form-control rounded",
           attrs: { type: "date", name: "date" },
           domProps: { value: _vm.date },
           on: {
@@ -38581,37 +38958,62 @@ var render = function () {
           },
         }),
         _vm._v(" "),
-        _c("input", {
-          directives: [
+        _c("div", { staticClass: "input-group m-auto" }, [
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.event_name,
+                expression: "event_name",
+              },
+            ],
+            staticClass: "form-control rounded",
+            attrs: {
+              type: "text",
+              name: "name",
+              maxlength: "10",
+              placeholder: "イベント名",
+            },
+            domProps: { value: _vm.event_name },
+            on: {
+              input: function ($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.event_name = $event.target.value
+              },
+            },
+          }),
+          _vm._v(" "),
+          _c(
+            "button",
             {
-              name: "model",
-              rawName: "v-model",
-              value: _vm.name,
-              expression: "name",
+              staticClass: "btn btn-outline-primary",
+              attrs: { type: "submit" },
+              on: { click: _vm.registerTodo },
             },
-          ],
-          attrs: { type: "text", name: "name" },
-          domProps: { value: _vm.name },
-          on: {
-            input: function ($event) {
-              if ($event.target.composing) {
-                return
-              }
-              _vm.name = $event.target.value
-            },
-          },
-        }),
+            [_vm._v("登録")]
+          ),
+        ]),
         _vm._v(" "),
-        _c(
-          "button",
-          { attrs: { type: "submit" }, on: { click: _vm.registerTodo } },
-          [_vm._v("登録")]
-        ),
+        _c("small", { staticClass: "px-2 form-text text-muted" }, [
+          _vm._v("※最大10文字"),
+        ]),
       ]
     ),
   ])
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function () {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "text-center" }, [
+      _c("h3", [_vm._v("ToDoリスト")]),
+    ])
+  },
+]
 render._withStripped = true
 
 

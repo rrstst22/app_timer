@@ -23,10 +23,19 @@ class TodoTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function testDeleteTodo()
+    // public function testDeleteTodo()
+    // {
+    //     $response = $this->delete('vue/delete-todo', [
+    //         'id' => "15"
+    //     ]);
+
+    //     $response->assertStatus(200);
+    // }
+
+    public function testGetTodo()
     {
-        $response = $this->delete('vue/delete-todo', [
-            'id' => "15"
+        $response = $this->get('get-todo', [
+            'id' => "17"
         ]);
 
         $response->assertStatus(200);

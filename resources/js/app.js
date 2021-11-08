@@ -19,8 +19,8 @@ window.Vue = require('vue').default;
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
-Vue.component('example-component', require('./components/ExampleComponent.vue').default);
 Vue.component('countdown-component', require('./components/CountDownComponent.vue').default);
+Vue.component('holiday-component', require('./components/HolidayComponent.vue').default);
 Vue.component('todo-component', require('./components/TodoComponent.vue').default);
 
 /**
@@ -33,9 +33,53 @@ const app = new Vue({
     el: '#app',
     data() {
         return {
-            on_arrow: true,
-            selected_time: ""
+            on_arrow: true, //サイドバー用
+            selected_holiday: "",
+            selected_todo: 0,
+            show_todo: true,
+            show_holiday: true,
+            on_modal_mode: false,
         }  
     },
-    
+    mounted() {
+        window.addEventListener('resize', this.handleResize); //リサイズ検知
+        this.handleResize();
+    },
+    methods: {
+        updateTodo: function(selected_todo) {
+            this.selected_todo = selected_todo;
+            this.selected_holiday = "";
+        },
+        updateHoliday: function(selected_holiday) {
+            this.selected_holiday = selected_holiday;
+            this.selected_todo = 0;
+        },
+        handleResize: function() {
+            if (window.innerWidth <= 770) { //画面幅770px以下でモーダルモード
+                this.on_modal_mode = true;
+                this.show_holiday = false;
+                this.show_todo = false;
+            } else {
+                this.on_modal_mode = false;
+                this.show_holiday = true;
+                this.show_todo = true;
+            }
+        },
+        openTodo: function() {
+            this.show_todo = true;
+        },
+        openHoliday: function() {
+            this.show_holiday = true;
+        },
+        closeTodo: function() {
+            if(this.on_modal_mode){   //モーダル画面表示ではない場合は、画面を閉じない。
+              this.show_todo = false;
+            }
+        },
+        closeHoliday: function() {
+            if(this.on_modal_mode){   //モーダル画面表示ではない場合は、画面を閉じない。
+              this.show_holiday = false;
+            }
+        },
+    }
 });

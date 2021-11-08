@@ -1,19 +1,44 @@
 <template>
-    <div>
-        <div class="todo-box">
+    <div class="p-4">
+        <div class="text-center"><h3>ToDoリスト</h3></div>
+        <div class="todo-section">
+
+            <!-- v-forでTodo一覧を表示 -->
             <div class="border" v-for="(todo, index) in todos" v-bind:key="index">
-                <button class="" v-on:click="update(index)">{{ todo.date }} {{ todo.name }}</button>
-                <button v-on:click="deleteTodo(todo.id)">削除</button>
+
+                <!-- 今日の日付を基準にしてTodoのボックスの色を変える -->
+                <!-- Todoが今日より後の場合 -->
+                <div v-if="compareDate(todo.date)" class="todo-box">
+                    <button class="btn todo-btn py-3" v-on:click="update(todo.id)">
+                        {{ formatDate(todo.date) }}<br>
+                        {{ todo.name }}
+                    </button>
+                    <button class="btn delete-btn btn-outline-primary" v-on:click="deleteTodo(todo.id)">削除</button>
+                </div>
+
+                <!-- Todoが今日より前の場合 -->
+                <div v-else class="todo-box">
+                    <button class="btn todo-btn-passed py-3" v-on:click="update(todo.id)">
+                        {{ formatDate(todo.date) }}<br>
+                        {{ todo.name }}
+                    </button>
+                    <button class="btn delete-btn-passed btn-outline-primary" v-on:click="deleteTodo(todo.id)">削除</button>
+                </div>
+
             </div>
+
         </div>
-        <form v-on:submit.prevent>
-            <!-- <input type="text" name="year">
-            <input type="text" name="month">
-            <input type="text" name="day"> -->
-            <input type="date" name="date" v-model="date">
-            <input type="text" name="name" v-model="name">
-            <button type="submit" v-on:click="registerTodo">登録</button>
+
+        <!-- イベントの登録フォーム -->
+        <form class="py-4" v-on:submit.prevent>
+            <input class="form-control rounded" type="date" name="date" v-model="date">
+            <div class="input-group m-auto">
+                <input class="form-control rounded" type="text" name="name" v-model="event_name" maxlength="10" placeholder="イベント名">
+                <button type="submit" class="btn btn-outline-primary" v-on:click="registerTodo">登録</button>
+            </div>
+            <small class="px-2 form-text text-muted">※最大10文字</small>
         </form>
+
     </div>
 </template>
 
@@ -22,67 +47,115 @@
         data () {
             return {
                 todos: [],
-                selected_time: "2021-11-07",
+                selected_todo: 0,
                 date: "",
-                name: ""
+                event_name: null
             }
         },
-        mounted() { //createdにすると動かない
+        mounted() {
             this.getTodos();
         },
         methods: {
-            update: function(index) {
-                this.selected_time = index;
+            //選択したTodoを親コンポーネントへ送信
+            update: function(selected_todo) {
+                this.$emit('todo-click', selected_todo);
+                this.closeModal();
             },
+            //モーダルウィンドウをクローズ
+            closeModal: function() {
+                this.$emit('todo-click-c');
+            },
+            //Todoリストを削除
             deleteTodo: function(todo_id) {
-                alert(todo_id);
+                var self = this;
                 axios.delete('vue/delete-todo', {
                     data: {id: todo_id}
                 })
-                    .then(function(response){
-                    }).catch(function(error){
+                    .then(function(response) {
+                        self.getTodos();
+                    }).catch(function(error) {
                         alert(error);
                 });          
             },
+            //Todoリストを取得
             getTodos: function() {
                 var self = this;
-                axios.get('get-todos')
-                    .then(function(response){
+                axios.get('vue/get-todos')
+                    .then(function(response) {
                         self.todos = response.data;
-                    }).catch(function(error){
+                    }).catch(function(error) {
                         alert(error);
                 });
             },
+            //Todoを登録
             registerTodo: function() {
-                var self = this;
-                axios.post('vue/register-todo', {
-                    date: this.date,
-                    name: this.name
-                })
-                    .then(function(response){
-                        self.date = "",
-                        self.name = ""
-                        // self.todos = response.data;
-                    }).catch(function(error){
-                        alert(error);
-                });               
-            }
+                //Null処理
+                if(this.event_name) {
+                    var self = this;
+                    axios.post('vue/register-todo', {
+                        date: this.date,
+                        name: this.event_name
+                    })
+                        .then(function(response) {
+                            self.date = "",
+                            self.event_name = ""
+                            self.getTodos(); //Todoリスト更新
+                        }).catch(function(error){
+                            alert(error);
+                    });  
+                }else{
+                    alert("イベント名を入力してください。")
+                }             
+            },
+            //日付の表示形式を指定
+            formatDate: function(todo_date) {
+                //文字列をdatetime型へ変換
+                const time = Date.parse(todo_date);
+                const date = new Date(time);
+
+                //年月日を取得し、フォーマットを作成
+                const year = date.getFullYear();
+                const month = ("0"+(date.getMonth() + 1)).slice(-2);
+                const day = ("0"+date.getDate()).slice(-2);
+                const formatted_date = year + "-" + month + "-" + day; 
+
+                return formatted_date;
+            },
+            //今日の日付とイベントの日付を比較
+            compareDate: function(todo_date) {
+                const time = Date.parse(todo_date); //文字列をdatetime型へ変換
+                const now = new Date(); //今日の日付を取得
+
+                if(now <= time) {
+                    return true;
+                }else {
+                    return false;
+                }
+            },
         }
     }
 
 </script>
 
 <style scoped>
-.time-box {
-    font-size: 1.5rem;
-    
+.todo-section {
+    overflow-y: scroll;
+    height: 400px;
 }
 .todo-box {
-    overflow-y: scroll;
-    height: 500px;
-    cursor: pointer;
+    display: flex;
+    flex-wrap: nowrap;
 }
-.holiday {
-    width: 100%;
+.todo-btn {
+    flex-grow: 1;
+    border-radius: 9px;
+}
+.todo-btn-passed {
+    flex-grow: 1;
+    border-radius: 9px;
+    opacity: .4;
+}
+.delete-btn-passed {
+    opacity: .4;
 }
 </style>

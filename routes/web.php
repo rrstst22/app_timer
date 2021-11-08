@@ -17,8 +17,11 @@ Route::get('/', function () {
     return view('index');
 });
 
+//VueのAxios用
+Route::get('vue/get-holiday', [App\Http\Controllers\HolidayController::class, 'getHoliday']);
+Route::get('vue/get-holidays', [App\Http\Controllers\HolidayController::class, 'getHolidays']);
 
-Route::get('get-holidays', [App\Http\Controllers\CountDownController::class, 'getHolidays']);
-Route::get('get-todos', [App\Http\Controllers\ToDoController::class, 'getTodos']);
-Route::post('vue/register-todo', [App\Http\Controllers\ToDoController::class, 'registerTodo']);
-Route::delete('vue/delete-todo', [App\Http\Controllers\ToDoController::class, 'deleteTodo']);
+Route::get('vue/get-todo', [App\Http\Controllers\TodoController::class, 'getTodo']);
+Route::get('vue/get-todos', [App\Http\Controllers\TodoController::class, 'getTodos']);
+Route::post('vue/register-todo', [App\Http\Controllers\TodoController::class, 'registerTodo']);
+Route::delete('vue/delete-todo', [App\Http\Controllers\TodoController::class, 'deleteTodo']);

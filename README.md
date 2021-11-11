@@ -1,6 +1,6 @@
 # Timer
 
-Todo期限や祝日までのカウントダウンを表示する
+Todo期限や祝日までの日付カウントダウンを表示します。
 
 ## :globe_with_meridians:URL
 http://test

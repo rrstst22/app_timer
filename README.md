@@ -1,6 +1,6 @@
 # Timer
 
-画像
+Todo期限や祝日までのカウントダウンを表示する
 
 ## :globe_with_meridians:URL
 http://test
@@ -11,10 +11,10 @@ http://test
 ## :pencil2:本アプリについて
 
 ### 使い方
-1. Todoリスト または 祝日 をクリックする
-2. 画面左側に、1でクリックした日までの残り時間が表示される
+1. Todoリスト または 祝日 を選択する
+2. 画面左側において、1でクリックした日付までのカウントダウンが開始される
 
-![timer](https://user-images.githubusercontent.com/92190851/141150193-fb8ae32c-c27c-4f08-9d4a-eadb23ee0162.png)
+![timer](https://user-images.githubusercontent.com/92190851/141295698-61cf1fbf-21a8-4af6-b747-5676bbd6530a.png)
 
 ### 機能
 
@@ -33,7 +33,7 @@ http://test
 ## :page_facing_up:技術仕様
 
 ### 基本情報
-- 言語フレームワーク
+- 言語、フレームワーク
     - HTML, CSS, JavaScript, PHP
     - Vue.js 2.6.14, Laravel 8.68.1
 

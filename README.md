@@ -51,9 +51,9 @@ http://test
 
 ### 使用技術
 
-- 外部APIとの連携（Laravel）
+- 日時操作（Javascript、Dateオブジェクト）
 - 非同期通信Ajax（Vue.js）
 - 親子コンポーネント間の受け渡し（Vue.js）
-- データ参照、登録（Laravel）
-- 日時操作（Javascript）
 - カウントダウン（Vue.js）
+- 外部APIとの連携（Laravel）
+- テーブル取得、作成、削除（Laravel）

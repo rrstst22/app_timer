@@ -30,7 +30,6 @@
 
         <div class="controller" v-bind:class='{onarrow:on_arrow}'>
             <div class="icon"><a href="./"><i class="fas fa-home"></i></a></div>
-            <div class="icon"><i class="fab fa-twitter"></i></div>
             <div class="icon"><a href="import"><i class="fas fa-user-lock"></i></a></div>
         </div>
         

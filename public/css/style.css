@@ -1,13 +1,12 @@
 /* ヘッダーとフッターとサイドバー */
 .logo-box {
-    background: blue;
-    color: green;
-    font-size: 1.5rem;
-    height: 100px;
+    background: #4169e1;
+    font-size: 1.2rem;
+    height: 70px;
 }
 
 .logo {
-    padding: 28px;
+    padding: 20px;
 }
 
 .controller {

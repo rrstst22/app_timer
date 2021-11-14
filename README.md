@@ -3,7 +3,7 @@
 Todo期限や祝日までの日付カウントダウンを表示します。
 
 ## :globe_with_meridians:URL
-http://test
+http://riupad-dev.com:8081
 
 <br>
 <br>

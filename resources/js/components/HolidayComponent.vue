@@ -1,6 +1,6 @@
 <template>
-<div class="p-4">
-    <div class="text-center"><h3>祝日</h3></div>
+<div>
+    <div class="text-center"><h3><i class="fas fa-mug-hot m-1"></i>祝日</h3></div>
     <div class="holiday-box">
 
         <!-- v-forで祝日一覧を表示 -->

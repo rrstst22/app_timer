@@ -1,15 +1,20 @@
 <template>
-    <div class="p-4">
-        <div class="text-center"><h3>カウントダウン</h3></div>
+    <div>
+        <div class="text-center"><h3><i class="fas fa-hourglass-start m-1"></i>カウントダウン</h3></div>
         <div class="time-section text-center p-4">
+            
+            <!-- イベント名表示 -->
             <div class="p-2">
                 <p>{{ target_event }}まで</p>
                 <p>あと</p>
             </div>
+            
+            <!-- カウントダウン表示 -->
             <div class="time-box p-4">
                 <p><span id="day"></span>日と</p>
                 <p><span id="hour"></span>時間<span id="min"></span>分<span id="sec"></span>秒</p>
             </div>
+            
         </div>
     </div>
 </template>

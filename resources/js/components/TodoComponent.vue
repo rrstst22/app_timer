@@ -1,6 +1,6 @@
 <template>
-    <div class="p-4">
-        <div class="text-center"><h3>ToDoリスト</h3></div>
+    <div>
+        <div class="text-center"><h3><i class="fas fa-sticky-note m-1"></i>ToDoリスト</h3></div>
         <div class="todo-section">
 
             <!-- v-forでTodo一覧を表示 -->
@@ -30,7 +30,7 @@
         </div>
 
         <!-- イベントの登録フォーム -->
-        <form class="py-4" v-on:submit.prevent>
+        <form class="event-form" v-on:submit.prevent>
             <input class="form-control rounded" type="date" name="date" v-model="date" v-bind:class={red:error_date}>
             <div class="input-group m-auto">
                 <input class="form-control rounded" type="text" name="name" v-model="event_name" v-bind:class={red:error_event} maxlength="10" placeholder="イベント名">
@@ -38,7 +38,6 @@
             </div>
             <small class="px-2 form-text text-muted">※最大10文字</small>
         </form>
-
     </div>
 </template>
 
@@ -167,6 +166,9 @@
 }
 .delete-btn-passed {
     opacity: .4;
+}
+.event-form {
+    padding-top: 30px; 
 }
 .red {
     border: 2px solid red;

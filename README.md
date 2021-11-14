@@ -3,9 +3,8 @@
 Todo期限や祝日までの日付カウントダウンを表示します。
 
 ## :globe_with_meridians:URL
-http://riupad-dev.com:8081
+http://riupad-dev.com:8082
 
-<br>
 <br>
 
 ## :pencil2:本アプリについて
@@ -13,8 +12,9 @@ http://riupad-dev.com:8081
 ### 使い方
 1. Todoリスト または 祝日 を選択する
 2. 画面左側において、1でクリックした日付までのカウントダウンが開始される
+<br>
 
-![timer](https://user-images.githubusercontent.com/92190851/141295698-61cf1fbf-21a8-4af6-b747-5676bbd6530a.png)
+![timer](https://user-images.githubusercontent.com/92190851/141679015-1422c0fc-2585-4322-bdf6-67af0fdeead6.png)
 
 ### 機能
 

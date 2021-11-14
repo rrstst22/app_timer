@@ -21,7 +21,7 @@
 <body>
     <div id="app">
         <div class="logo-box text-center">
-            <div class="logo"><a href="{{ url('/') }}">Webエンジニアへの道</a></div>
+            <div class="logo"><a href="{{ url('/') }}">Webエンジニアとして</a></div>
         </div>
 
         <div class="arrow" v-on:click='on_arrow=!on_arrow'>
@@ -30,7 +30,6 @@
 
         <div class="controller" v-bind:class='{onarrow:on_arrow}'>
             <div class="icon"><a href="./"><i class="fas fa-home"></i></a></div>
-            <div class="icon"><a href="import"><i class="fas fa-user-lock"></i></a></div>
         </div>
         
         <main class="py-4">

@@ -1,3 +1,18 @@
+/* ベースの上書き */
+body {
+    background-color: #fff !important;
+}
+
+a {
+    color: #fff !important;
+}
+
+a:hover {
+    color: #fff !important;
+    text-decoration: none !important;
+    opacity: .4;
+}
+
 /* ヘッダーとフッターとサイドバー */
 .logo-box {
     background: #4169e1;

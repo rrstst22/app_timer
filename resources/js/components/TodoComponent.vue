@@ -31,9 +31,9 @@
 
         <!-- イベントの登録フォーム -->
         <form class="py-4" v-on:submit.prevent>
-            <input class="form-control rounded" type="date" name="date" v-model="date">
+            <input class="form-control rounded" type="date" name="date" v-model="date" v-bind:class={red:error_date}>
             <div class="input-group m-auto">
-                <input class="form-control rounded" type="text" name="name" v-model="event_name" maxlength="10" placeholder="イベント名">
+                <input class="form-control rounded" type="text" name="name" v-model="event_name" v-bind:class={red:error_event} maxlength="10" placeholder="イベント名">
                 <button type="submit" class="btn btn-outline-primary" v-on:click="registerTodo">登録</button>
             </div>
             <small class="px-2 form-text text-muted">※最大10文字</small>
@@ -49,7 +49,9 @@
                 todos: [],
                 selected_todo: 0,
                 date: "",
-                event_name: null
+                event_name: null,
+                error_date: false,
+                error_event: false,
             }
         },
         mounted() {
@@ -89,22 +91,30 @@
             },
             //Todoを登録
             registerTodo: function() {
+                this.error_date = false;
+                this.error_event = false;
                 //Null処理
-                if(this.event_name) {
+                if(this.date && this.event_name) {
                     var self = this;
                     axios.post('vue/register-todo', {
                         date: this.date,
                         name: this.event_name
                     })
                         .then(function(response) {
-                            self.date = "",
-                            self.event_name = ""
+                            self.date = "";
+                            self.event_name = "";
                             self.getTodos(); //Todoリスト更新
+                            self.error = response.data;
                         }).catch(function(error){
                             alert(error);
                     });  
-                }else{
-                    alert("イベント名を入力してください。")
+                }else {
+                    if(!this.date) {
+                        this.error_date = true;
+                    }
+                    if(!this.event_name) {
+                        this.error_event = true;
+                    }
                 }             
             },
             //日付の表示形式を指定
@@ -157,5 +167,8 @@
 }
 .delete-btn-passed {
     opacity: .4;
+}
+.red {
+    border: 2px solid red;
 }
 </style>
